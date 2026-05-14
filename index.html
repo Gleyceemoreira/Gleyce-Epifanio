@@ -2951,23 +2951,37 @@ async function loadPayEvents(){
   const cAtual=gc();
   const pagamentos=cAtual?cAtual.payments||[]:[];
 
-  // Data de início = primeiro dia do mês atual
+  // Só mostrar a partir do mês atual
   const hoje=new Date();
   const inicioPeriodo=new Date(hoje.getFullYear(),hoje.getMonth(),1).toISOString().split('T')[0];
 
+  // Normalizar nome: remove acentos, lowercase, trim
+  function normNome(s){
+    return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  }
+
   const pendentes=events.filter(ev=>{
-    // 1. Já foi marcado como importado
+    // 1. Já importado por ID
     if(importados.includes(ev.id)) return false;
 
     // 2. Data do evento
     const evDate=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
 
-    // 3. Eventos de meses anteriores ao atual não aparecem
+    // 3. Ignorar eventos de meses anteriores
     if(evDate&&evDate<inicioPeriodo) return false;
 
-    // 4. Verificar se já existe pagamento lançado nessa mesma data de cirurgia
+    // 4. Verificar se já foi lançado: compara data + nome completo antes do traço
     if(evDate){
-      const jaLancado=pagamentos.some(p=>p.dateCirug&&p.dateCirug===evDate);
+      // Nome do evento: tudo antes do primeiro traço/hífen
+      const evTitulo=normNome((ev.summary||'').split(/\s*[-–—]\s*/)[0]);
+      const jaLancado=pagamentos.some(p=>{
+        if(!p.dateCirug||p.dateCirug!==evDate) return false;
+        // Nome do paciente lançado: campo patient ou início da description
+        const pTitulo=normNome((p.patient||p.description||'').split(/\s*[-–—]\s*/)[0]);
+        if(!pTitulo||pTitulo.length<4||!evTitulo||evTitulo.length<4) return false;
+        // Comparação exata do nome completo (não substring parcial)
+        return evTitulo===pTitulo;
+      });
       if(jaLancado) return false;
     }
 
