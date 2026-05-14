@@ -325,7 +325,14 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
   </div>
 
   <div class="sidebar-bottom">
-    <div id="gcal-global-status" style="margin-bottom:10px;font-size:11px"></div>
+    <div id="gcal-global-status" style="margin-bottom:8px;font-size:11px"></div>
+    <!-- Aviso de sessão expirando -->
+    <div id="gcal-expiry-banner" style="display:none;background:rgba(196,154,60,0.15);border:1px solid rgba(196,154,60,0.4);border-radius:6px;padding:8px 10px;margin-bottom:8px;flex-direction:column;gap:6px">
+      <div style="font-size:10px;color:#c49a3c;font-weight:600">⚠ Sessão expirando em breve</div>
+      <button onclick="gcalPopupAuth(()=>{updateGcalSidebarStatus();document.getElementById('gcal-expiry-banner').style.display='none';toast('✓ Reconectado!');loadCalendarList&&loadCalendarList();})" style="width:100%;background:#c49a3c;border:none;border-radius:5px;padding:6px;color:#000;cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif">
+        Renovar sessão (1 clique)
+      </button>
+    </div>
     <button onclick="connectGoogleCalendarGlobal()" id="gcal-global-btn" style="width:100%;background:var(--adim);border:1px solid var(--ab);border-radius:6px;padding:8px 12px;color:var(--al);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;text-align:center;margin-bottom:8px">
       📅 Conectar Google Calendar
     </button>
@@ -1307,28 +1314,62 @@ async function gcalEnsureToken(){
   return ok;
 }
 
-function connectGoogleCalendarGlobal(){
-  // Salvar estado atual antes de redirecionar
-  localStorage.setItem('gcal_return_cid', cid||'');
+function gcalPopupAuth(onSuccess){
+  const redirectUri=window.location.origin+window.location.pathname;
+  const hint=localStorage.getItem('gcal_email')||'';
   const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
     'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
+    '&redirect_uri='+encodeURIComponent(redirectUri)+
     '&response_type=token'+
     '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=consent';
-  window.location.href=authUrl;
+    '&prompt=select_account'+
+    (hint?'&login_hint='+encodeURIComponent(hint):'');
+  // Abrir popup pequeno centralizado
+  const w=500,h=600;
+  const left=Math.round((screen.width-w)/2);
+  const top=Math.round((screen.height-h)/2);
+  const popup=window.open(authUrl,'gcal_auth','width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes');
+  if(!popup){
+    // Popup bloqueado — fallback para redirect
+    localStorage.setItem('gcal_return_cid', cid||'');
+    window.location.href=authUrl;
+    return;
+  }
+  // Monitorar o popup até pegar o token
+  const interval=setInterval(()=>{
+    if(popup.closed){clearInterval(interval);return;}
+    try{
+      const hash=popup.location.hash;
+      if(hash&&hash.includes('access_token')){
+        const params=new URLSearchParams(hash.substring(1));
+        gcalToken=params.get('access_token');
+        const email=params.get('email')||hint;
+        if(email) localStorage.setItem('gcal_email',email);
+        const exp=parseInt(params.get('expires_in')||'3600');
+        gcalTokenExpiry=Date.now()+(exp*1000);
+        localStorage.setItem('gcal_token',gcalToken);
+        localStorage.setItem('gcal_token_expiry',String(gcalTokenExpiry));
+        clearInterval(interval);
+        popup.close();
+        updateGcalSidebarStatus();
+        toast('✓ Google Calendar conectado!');
+        if(onSuccess) onSuccess();
+      }
+    }catch(e){/* cross-origin ainda carregando */}
+  },500);
+}
+
+function connectGoogleCalendarGlobal(){
+  gcalPopupAuth(()=>{
+    updateGcalSidebarStatus();
+  });
 }
 
 function connectGoogleCalendar(){
-  // Salvar o cliente atual para voltar depois
-  localStorage.setItem('gcal_return_cid', cid||'');
-  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
-    'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
-    '&response_type=token'+
-    '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=consent';
-  window.location.href=authUrl;
+  gcalPopupAuth(()=>{
+    loadCalendarList();
+    updateGcalSidebarStatus();
+  });
 }
 
 function updateGcalSidebarStatus(){
@@ -1349,19 +1390,30 @@ function updateGcalSidebarStatus(){
   }
 }
 
-// Atualizar status do sidebar a cada 30 segundos
-setInterval(updateGcalSidebarStatus, 30000);
+// Atualizar status do sidebar a cada 30 segundos + aviso de expiração
+setInterval(()=>{
+  updateGcalSidebarStatus();
+  // Avisar 10 minutos antes de expirar
+  if(gcalToken&&gcalTokenExpiry){
+    const minsLeft=Math.round((gcalTokenExpiry-Date.now())/60000);
+    if(minsLeft===10){
+      // Tentar renovar silenciosamente primeiro
+      gcalSilentRefresh().then(ok=>{
+        if(!ok){
+          // Mostrar aviso de reconexão rápida
+          const banner=document.getElementById('gcal-expiry-banner');
+          if(banner) banner.style.display='flex';
+        }
+      });
+    }
+    if(minsLeft<=0){
+      const banner=document.getElementById('gcal-expiry-banner');
+      if(banner) banner.style.display='flex';
+    }
+  }
+}, 30000);
 
-function connectGoogleCalendar(){
-  localStorage.setItem('gcal_return_cid', cid||'');
-  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
-    'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
-    '&response_type=token'+
-    '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=consent';
-  window.location.href=authUrl;
-}
+// connectGoogleCalendar já definida acima
 
 async function loadCalendarList(){
   const statusEl=document.getElementById('gcal-status-perfil');
