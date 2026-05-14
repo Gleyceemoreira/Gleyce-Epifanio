@@ -2946,25 +2946,32 @@ async function loadPayEvents(){
     el.innerHTML='<span style="color:var(--m)">Nenhum evento encontrado.</span>';
     return;
   }
-  // Lista global de importados (IDs já usados)
+  // Lista global de importados (não por cliente)
   const importados=JSON.parse(localStorage.getItem('ge_gcal_imported')||'[]');
-  const c2=gc();
-  const pagamentos=c2?c2.payments||[]:[];
+  const cAtual=gc();
+  const pagamentos=cAtual?cAtual.payments||[]:[];
 
-  // Filtrar eventos que já foram importados OU já têm pagamento com mesma data de cirurgia
+  // Data de início = primeiro dia do mês atual
+  const hoje=new Date();
+  const inicioPeriodo=new Date(hoje.getFullYear(),hoje.getMonth(),1).toISOString().split('T')[0];
+
   const pendentes=events.filter(ev=>{
+    // 1. Já foi marcado como importado
     if(importados.includes(ev.id)) return false;
+
+    // 2. Data do evento
     const evDate=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
-    const evTitle=(ev.summary||'').toLowerCase().trim();
-    // Verificar se já existe pagamento com mesma data de cirurgia E nome parecido
-    const jaLancado=pagamentos.some(p=>{
-      if(!p.dateCirug||p.dateCirug!==evDate) return false;
-      // Comparar nome do paciente (primeiras palavras do título do evento)
-      const nomeEvento=evTitle.split(/[-–—·]/)[0].trim();
-      const nomePag=(p.patient||p.description||'').toLowerCase().trim().split(/[-–—·]/)[0].trim();
-      return nomePag.length>2&&(nomeEvento.includes(nomePag)||nomePag.includes(nomeEvento));
-    });
-    return !jaLancado;
+
+    // 3. Eventos de meses anteriores ao atual não aparecem
+    if(evDate&&evDate<inicioPeriodo) return false;
+
+    // 4. Verificar se já existe pagamento lançado nessa mesma data de cirurgia
+    if(evDate){
+      const jaLancado=pagamentos.some(p=>p.dateCirug&&p.dateCirug===evDate);
+      if(jaLancado) return false;
+    }
+
+    return true;
   });
 
   if(!pendentes.length){
