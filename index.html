@@ -297,10 +297,6 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span> Tarefas
     <span id="tarefas-badge" style="margin-left:auto;background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
   </button>
-  <button class="nav-item" id="nav-entregas" onclick="goView('entregas')">
-    <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg></span> Entregas
-    <span id="entregas-badge" style="margin-left:auto;background:var(--ac);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
-  </button>
 
   <!-- Financeiro Pessoal expansível -->
   <button class="nav-item" onclick="toggleFinMenu()" id="nav-fin-toggle" style="justify-content:space-between">
@@ -319,20 +315,10 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
     <button class="nav-item" id="nav-pf-graficos" onclick="goView('pf-graficos')" style="font-size:12px">
       <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Gráficos
     </button>
-    <button class="nav-item" id="nav-pf-emprestimos" onclick="goView('pf-emprestimos')" style="font-size:12px">
-      <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Empréstimos
-    </button>
   </div>
 
   <div class="sidebar-bottom">
-    <div id="gcal-global-status" style="margin-bottom:8px;font-size:11px"></div>
-    <!-- Aviso de sessão expirando -->
-    <div id="gcal-expiry-banner" style="display:none;background:rgba(196,154,60,0.15);border:1px solid rgba(196,154,60,0.4);border-radius:6px;padding:8px 10px;margin-bottom:8px;flex-direction:column;gap:6px">
-      <div style="font-size:10px;color:#c49a3c;font-weight:600">⚠ Sessão expirando em breve</div>
-      <button onclick="gcalPopupAuth(()=>{updateGcalSidebarStatus();document.getElementById('gcal-expiry-banner').style.display='none';toast('✓ Reconectado!');loadCalendarList&&loadCalendarList();})" style="width:100%;background:#c49a3c;border:none;border-radius:5px;padding:6px;color:#000;cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif">
-        Renovar sessão (1 clique)
-      </button>
-    </div>
+    <div id="gcal-global-status" style="margin-bottom:10px;font-size:11px"></div>
     <button onclick="connectGoogleCalendarGlobal()" id="gcal-global-btn" style="width:100%;background:var(--adim);border:1px solid var(--ab);border-radius:6px;padding:8px 12px;color:var(--al);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:11px;text-align:center;margin-bottom:8px">
       📅 Conectar Google Calendar
     </button>
@@ -377,7 +363,8 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
       <button class="tb active" data-tab="perfil" onclick="swTab('perfil',this)">Perfil</button>
       <button class="tb" data-tab="calendario" onclick="swTab('calendario',this)">Calendário</button>
       <button class="tb" data-tab="financeiro" onclick="swTab('financeiro',this)">Financeiro</button>
-      <button class="tb" data-tab="conteudos" onclick="swTab('conteudos',this)">Banco de Conteúdo</button>
+      <button class="tb" data-tab="ideias" onclick="swTab('ideias',this)">Ideias</button>
+      <button class="tb" data-tab="conteudos" onclick="swTab('conteudos',this)">Conteúdos</button>
       <button class="tb" data-tab="transporte" onclick="swTab('transporte',this)">Transporte</button>
       <button class="tb" data-tab="cobranca" onclick="swTab('cobranca',this)">Cobrança</button>
     </div>
@@ -405,15 +392,6 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
       </div>
       <!-- CALENDÁRIO -->
       <div class="tp" id="tp-calendario">
-        <div id="seq-ruler" style="position:sticky;top:-32px;z-index:50;margin:-32px -32px 18px -32px;padding:10px 32px 10px 32px;background:var(--bg);border-bottom:1px solid var(--b);">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px">
-            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m)">Régua de sequência de conteúdo</div>
-            <button onclick="openAddSeqItem()" style="background:none;border:1px dashed var(--b2);border-radius:5px;padding:3px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">+ Tipo</button>
-          </div>
-          <div id="seq-items" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:36px;padding:7px 10px;background:var(--s2);border:1px solid var(--b);border-radius:8px">
-            <span id="seq-empty" style="font-size:11px;color:var(--b2);font-style:italic">Adicione tipos de conteúdo para montar sua sequência...</span>
-          </div>
-        </div>
         <div class="cn2">
           <button class="cnb" onclick="chMo(-1)">‹</button>
           <div style="display:flex;align-items:center;gap:10px">
@@ -423,14 +401,6 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
           <button class="cnb" onclick="chMo(1)">›</button>
         </div>
         <div class="cgrid" id="cgrid"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin:8px 0 16px;flex-wrap:wrap;gap:10px">
-          <button class="cnb" onclick="chMo(-1)">‹</button>
-          <div style="display:flex;align-items:center;gap:10px">
-            <div class="cm2" id="cml-bottom" style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;letter-spacing:1px;color:var(--t2)"></div>
-            <button class="cnb" onclick="goToday()" style="font-size:11px;padding:5px 12px;letter-spacing:0.5px">Hoje</button>
-          </div>
-          <button class="cnb" onclick="chMo(1)">›</button>
-        </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
           <button class="btn bp bsm" onclick="openPost(null,null)">+ Nova postagem</button>
           <button class="btn bg bsm" id="toggle-list-btn" onclick="toggleList()">Ver lista ▾</button>
@@ -485,10 +455,22 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
         <div class="fs" id="fsum"></div>
         <div id="paylist"></div>
       </div>
+      <!-- IDEIAS -->
+      <div class="tp" id="tp-ideias">
+        <div class="sh">
+          <div>
+            <div class="st">Banco de Ideias</div>
+            <div style="font-size:12px;color:var(--m);margin-top:3px">Conteúdos em desenvolvimento — sem data ainda</div>
+          </div>
+          <button class="btn bp bsm" onclick="openIdeia(null)">+ Nova ideia</button>
+        </div>
+        <div id="ideias-list"></div>
+      </div>
+      <!-- CONTEÚDOS (ideias sem data) -->
       <div class="tp" id="tp-conteudos">
         <div class="sh">
           <div>
-            <div class="st">Banco de Conteúdo</div>
+            <div class="st">Banco de Conteúdos</div>
             <div style="font-size:12px;color:var(--m);margin-top:4px">Ideias que ainda não têm data definida. Defina uma data para mover ao calendário.</div>
           </div>
           <button class="btn bp bsm" onclick="openConteudo(null)">+ Nova ideia</button>
@@ -503,22 +485,8 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
             <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;letter-spacing:1px" id="transp-month-title"></div>
             <button class="cnb" onclick="chTranspMonth(1)">›</button>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <div style="display:flex;align-items:center;gap:8px;background:rgba(42,107,124,0.10);border:1px solid rgba(42,107,124,0.28);border-radius:8px;padding:7px 13px">
-              <span style="font-size:15px">🚌</span>
-              <div style="display:flex;flex-direction:column;gap:2px">
-                <span style="color:var(--m);font-size:9px;text-transform:uppercase;letter-spacing:0.8px">Transporte público</span>
-                <div style="display:flex;gap:10px;align-items:center">
-                  <span style="font-size:11px;color:var(--t2)">Ida+Volta <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:15px">R$ 18,76</strong></span>
-                  <span style="color:var(--b2);font-size:11px">·</span>
-                  <span style="font-size:11px;color:var(--t2)">Só ida/volta <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:15px">R$ 9,38</strong></span>
-                </div>
-              </div>
-            </div>
-            <button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button>
-          </div>
+          <button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button>
         </div>
-        <div id="transp-fix-banner"></div>
         <div class="fs" id="transp-sum"></div>
         <div id="transp-list"></div>
       </div>
@@ -679,41 +647,6 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
 </div>
 
 <!-- VIEW: TAREFAS GLOBAL -->
-<div class="view" id="view-pf-emprestimos">
-  <div class="page-header">
-    <div>
-      <div class="page-title">Empréstimos</div>
-      <div class="page-sub">Valores emprestados e controle de pagamentos</div>
-    </div>
-    <button class="btn bp bsm" onclick="openLoan(null)">+ Novo empréstimo</button>
-  </div>
-  <div id="loans-summary" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px"></div>
-  <div id="loans-list"></div>
-</div>
-
-<div class="view" id="view-entregas">
-  <div class="page-header" style="flex-wrap:wrap;gap:10px">
-    <div>
-      <div class="page-title">Central de Entregas</div>
-      <div class="page-sub">Todos os conteúdos agendados · ordenados por data</div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-      <button class="cnb" onclick="chEntregasMonth(-1)">‹</button>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;letter-spacing:1px" id="entregas-month-label"></div>
-      <button class="cnb" onclick="chEntregasMonth(1)">›</button>
-      <div style="display:flex;gap:6px;margin-left:8px">
-        <button class="btn bg bsm" id="ef-todos" onclick="setEntregasFilter('todos')">Todos</button>
-        <button class="btn bg bsm" id="ef-pendente" onclick="setEntregasFilter('pendente')">Pendentes</button>
-        <button class="btn bg bsm" id="ef-entregue" onclick="setEntregasFilter('entregue')">Entregues</button>
-      </div>
-    </div>
-  </div>
-  <div class="main">
-    <div id="entregas-summary" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px"></div>
-    <div id="entregas-list"></div>
-  </div>
-</div>
-
 <div class="view" id="view-tarefas-global">
   <div class="page-header">
     <div>
@@ -762,9 +695,8 @@ let calY = new Date().getFullYear(), calM = new Date().getMonth();
 let mediaRec=null, recChunks=[], isRec=false;
 
 // Dados financeiros pessoais (chave unificada)
-let pfData = JSON.parse(localStorage.getItem('gleyce_pf')||'{"expenses":[],"gains":[],"categories":[],"loans":[]}');
+let pfData = JSON.parse(localStorage.getItem('gleyce_pf')||'{"expenses":[],"gains":[],"categories":[]}');
 if(!pfData.gains) pfData.gains = [];
-if(!pfData.loans) pfData.loans = [];
 let curYear = new Date().getFullYear();
 let curMonth = new Date().getMonth();
 
@@ -855,8 +787,7 @@ async function syncFromCloud(){
     if(cloudPayMethods&&cloudPayMethods.length){payMethods=cloudPayMethods;localStorage.setItem('ge_pay_methods',JSON.stringify(payMethods));}
     if(cloudPostStatus&&cloudPostStatus.length){globalPostStatus=cloudPostStatus;localStorage.setItem('ge_post_status',JSON.stringify(globalPostStatus));}
     console.log('Sincronizado com a nuvem ✓');
-    // Atualizar badge de tarefas e entregas
-  updateEntregasBadge();
+    // Atualizar badge de tarefas
     setTimeout(()=>renderGlobalTasks(),100);
   }catch(e){console.warn('Sync error:',e);}
 }
@@ -963,7 +894,6 @@ function openManageTags(){
     <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--b);border-radius:8px;margin-bottom:6px">
       <div style="width:16px;height:16px;border-radius:50%;background:${t.color};flex-shrink:0"></div>
       <span style="flex:1;font-size:13px">${t.name}</span>
-      <button onclick="openEditTag('${t.id}')" style="background:none;border:1px solid var(--b2);border-radius:4px;padding:3px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
       <button onclick="delGlobalTag('${t.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:4px;padding:3px 10px;color:#b85454;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Excluir</button>
     </div>
   `).join('');
@@ -978,44 +908,6 @@ function openManageTags(){
       </div>
     </div>
   `);
-}
-function openEditTag(id){
-  const tag=globalTags.find(t=>t.id===id);if(!tag)return;
-  showMo('Editar etiqueta',`
-    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px">
-      <input type="color" id="et-col" value="${tag.color}" style="width:52px;height:44px;padding:2px;border-radius:6px;border:1px solid var(--b);background:var(--s);cursor:pointer;flex-shrink:0">
-      <input type="text" id="et-name" value="${tag.name}" placeholder="Nome da etiqueta..." style="flex:1">
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn bp" style="flex:1" onclick="saveEditTag('${id}')">Salvar alterações</button>
-      <button class="btn bg" onclick="openManageTags()">Cancelar</button>
-    </div>
-  `);
-}
-function saveEditTag(id){
-  const tag=globalTags.find(t=>t.id===id);if(!tag)return;
-  const name=document.getElementById('et-name').value.trim();
-  const color=document.getElementById('et-col').value;
-  if(!name){toast('Digite o nome','err');return;}
-  const dup=globalTags.find(t=>t.name===name&&t.id!==id);
-  if(dup){toast('Já existe uma etiqueta com esse nome','err');return;}
-  tag.name=name;tag.color=color;
-  saveTags();
-  // Atualizar o campo 'tag' (nome em texto) em todas as postagens e ideias de todos os clientes
-  clients=clients.map(c=>{
-    if(c.posts) c.posts=c.posts.map(p=>{
-      if(p.tagId===id){p.tag=name;}
-      return p;
-    });
-    if(c.ideas) c.ideas=c.ideas.map(idea=>{
-      if(idea.tagId===id){idea.tag=name;}
-      return idea;
-    });
-    return c;
-  });
-  localStorage.setItem('ge_v3',JSON.stringify(clients));
-  sbUpsert('clients',clients);
-  toast('Etiqueta atualizada!');openManageTags();
 }
 function addGlobalTag(){
   const name=document.getElementById('nt-name').value.trim();
@@ -1234,7 +1126,7 @@ function goView(name){
   const navEl=document.getElementById('nav-'+name);
   if(navEl) navEl.classList.add('active');
   // Abrir submenu financeiro se necessário
-  if(['pf-despesas','pf-ganhos','pf-graficos','pf-emprestimos'].includes(name)){
+  if(['pf-despesas','pf-ganhos','pf-graficos'].includes(name)){
     document.getElementById('fin-submenu').style.display='block';
     document.getElementById('fin-arrow').textContent='▾';
     document.getElementById('nav-fin-toggle').classList.add('active');
@@ -1243,8 +1135,6 @@ function goView(name){
   if(name==='pf-despesas') renderPFDespesas();
   if(name==='pf-ganhos') renderPFGanhos();
   if(name==='pf-graficos') renderGraficos();
-  if(name==='pf-emprestimos') renderLoans();
-  if(name==='entregas') renderEntregas();
   if(name==='tarefas-global') renderGlobalTasks();
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -1314,62 +1204,28 @@ async function gcalEnsureToken(){
   return ok;
 }
 
-function gcalPopupAuth(onSuccess){
-  const redirectUri=window.location.origin+window.location.pathname;
-  const hint=localStorage.getItem('gcal_email')||'';
+function connectGoogleCalendarGlobal(){
+  // Salvar estado atual antes de redirecionar
+  localStorage.setItem('gcal_return_cid', cid||'');
   const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
     'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(redirectUri)+
+    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
     '&response_type=token'+
     '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=select_account'+
-    (hint?'&login_hint='+encodeURIComponent(hint):'');
-  // Abrir popup pequeno centralizado
-  const w=500,h=600;
-  const left=Math.round((screen.width-w)/2);
-  const top=Math.round((screen.height-h)/2);
-  const popup=window.open(authUrl,'gcal_auth','width='+w+',height='+h+',left='+left+',top='+top+',resizable=yes,scrollbars=yes');
-  if(!popup){
-    // Popup bloqueado — fallback para redirect
-    localStorage.setItem('gcal_return_cid', cid||'');
-    window.location.href=authUrl;
-    return;
-  }
-  // Monitorar o popup até pegar o token
-  const interval=setInterval(()=>{
-    if(popup.closed){clearInterval(interval);return;}
-    try{
-      const hash=popup.location.hash;
-      if(hash&&hash.includes('access_token')){
-        const params=new URLSearchParams(hash.substring(1));
-        gcalToken=params.get('access_token');
-        const email=params.get('email')||hint;
-        if(email) localStorage.setItem('gcal_email',email);
-        const exp=parseInt(params.get('expires_in')||'3600');
-        gcalTokenExpiry=Date.now()+(exp*1000);
-        localStorage.setItem('gcal_token',gcalToken);
-        localStorage.setItem('gcal_token_expiry',String(gcalTokenExpiry));
-        clearInterval(interval);
-        popup.close();
-        updateGcalSidebarStatus();
-        toast('✓ Google Calendar conectado!');
-        if(onSuccess) onSuccess();
-      }
-    }catch(e){/* cross-origin ainda carregando */}
-  },500);
-}
-
-function connectGoogleCalendarGlobal(){
-  gcalPopupAuth(()=>{
-    updateGcalSidebarStatus();
-  });
+    '&prompt=consent';
+  window.location.href=authUrl;
 }
 
 function connectGoogleCalendar(){
-  gcalPopupAuth(()=>{
-    loadCalendarList();
-    updateGcalSidebarStatus();
-  });
+  // Salvar o cliente atual para voltar depois
+  localStorage.setItem('gcal_return_cid', cid||'');
+  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
+    'client_id='+GCAL_CLIENT_ID+
+    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
+    '&response_type=token'+
+    '&scope='+encodeURIComponent(GCAL_SCOPE)+
+    '&prompt=consent';
+  window.location.href=authUrl;
 }
 
 function updateGcalSidebarStatus(){
@@ -1390,30 +1246,19 @@ function updateGcalSidebarStatus(){
   }
 }
 
-// Atualizar status do sidebar a cada 30 segundos + aviso de expiração
-setInterval(()=>{
-  updateGcalSidebarStatus();
-  // Avisar 10 minutos antes de expirar
-  if(gcalToken&&gcalTokenExpiry){
-    const minsLeft=Math.round((gcalTokenExpiry-Date.now())/60000);
-    if(minsLeft===10){
-      // Tentar renovar silenciosamente primeiro
-      gcalSilentRefresh().then(ok=>{
-        if(!ok){
-          // Mostrar aviso de reconexão rápida
-          const banner=document.getElementById('gcal-expiry-banner');
-          if(banner) banner.style.display='flex';
-        }
-      });
-    }
-    if(minsLeft<=0){
-      const banner=document.getElementById('gcal-expiry-banner');
-      if(banner) banner.style.display='flex';
-    }
-  }
-}, 30000);
+// Atualizar status do sidebar a cada 30 segundos
+setInterval(updateGcalSidebarStatus, 30000);
 
-// connectGoogleCalendar já definida acima
+function connectGoogleCalendar(){
+  localStorage.setItem('gcal_return_cid', cid||'');
+  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
+    'client_id='+GCAL_CLIENT_ID+
+    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
+    '&response_type=token'+
+    '&scope='+encodeURIComponent(GCAL_SCOPE)+
+    '&prompt=consent';
+  window.location.href=authUrl;
+}
 
 async function loadCalendarList(){
   const statusEl=document.getElementById('gcal-status-perfil');
@@ -1727,48 +1572,6 @@ const TRANSP_TIPOS={
 
 const TRANSP_DESTINOS=['Consultório','Hospital/Centro Cirúrgico','Outro'];
 
-function transpStatusInfo(rs){
-  if(rs==='Recebido')  return {bg:'rgba(74,158,107,0.18)',c:'#4a9e6b',label:'RECEBIDO'};
-  if(rs==='Em atraso') return {bg:'rgba(184,84,84,0.15)', c:'#b85454',label:'EM ATRASO'};
-  return {bg:'rgba(196,154,60,0.12)',c:'#c49a3c',label:'A RECEBER'};
-}
-function transpPayDate(tripDate){
-  const d=new Date(tripDate+'T12:00:00');
-  return new Date(d.getFullYear(), d.getMonth()+1, 1).toISOString().split('T')[0];
-}
-function checkTranspFixBanner(){
-  const banner=document.getElementById('transp-fix-banner');
-  if(!banner) return;
-  const allClients=JSON.parse(localStorage.getItem('ge_v3')||'[]');
-  const wrong=pfData.gains.filter(g=>{
-    if(!g.fromTransp) return false;
-    for(const cl of allClients){
-      const tr=(cl.transportes||[]).find(t=>t.gainId===g.id);
-      if(tr){const correct=transpPayDate(tr.date);return g.date!==correct;}
-    }
-    return false;
-  });
-  if(wrong.length){
-    banner.innerHTML=`<div style="background:rgba(196,154,60,0.12);border:1px solid rgba(196,154,60,0.35);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
-      <div><div style="font-size:12px;font-weight:600;color:#c49a3c;margin-bottom:2px">⚠ ${wrong.length} lançamento(s) com data incorreta</div>
-      <div style="font-size:11px;color:var(--m)">Foram lançados no mês do transporte. Clique para corrigir.</div></div>
-      <button onclick="fixTranspGainDates()" style="background:#c49a3c;border:none;border-radius:6px;padding:8px 14px;color:#000;cursor:pointer;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;white-space:nowrap">Corrigir datas automático</button>
-    </div>`;
-  } else { banner.innerHTML=''; }
-}
-function fixTranspGainDates(){
-  let fixed=0;
-  const allClients=JSON.parse(localStorage.getItem('ge_v3')||'[]');
-  pfData.gains.forEach(g=>{
-    if(!g.fromTransp) return;
-    for(const cl of allClients){
-      const tr=(cl.transportes||[]).find(t=>t.gainId===g.id);
-      if(tr){const correct=transpPayDate(tr.date);if(g.date!==correct){g.date=correct;fixed++;}break;}
-    }
-  });
-  if(fixed>0){savePF();toast('✓ '+fixed+' lançamento(s) corrigido(s)!');checkTranspFixBanner();}
-  else toast('Nenhuma data precisava ser corrigida.');
-}
 function renderTransporte(){
   const c=gc();if(!c)return;
   const sumEl=document.getElementById('transp-sum');
@@ -1778,49 +1581,44 @@ function renderTransporte(){
   const ms=transpYear+'-'+String(transpMonth+1).padStart(2,'0');
   if(titleEl) titleEl.textContent=MNAMES[transpMonth]+' '+transpYear;
   const all=(c.transportes||[]);
-  const trips=all.filter(t=>t.date&&t.date.startsWith(ms)).sort((a,b)=>a.date.localeCompare(b.date));
+  const trips=all.filter(t=>t.date&&t.date.startsWith(ms))
+    .sort((a,b)=>a.date.localeCompare(b.date));
   const total=trips.reduce((s,t)=>s+t.value,0);
-  const recebido=trips.filter(t=>(t.reembolsoStatus||'A receber')==='Recebido').reduce((s,t)=>s+t.value,0);
   const byTipo={};
   trips.forEach(t=>{if(!byTipo[t.tipo])byTipo[t.tipo]=0;byTipo[t.tipo]+=t.value;});
+  // Cards de resumo
   sumEl.innerHTML=`
     <div class="fc"><div class="flab">Total do mês</div><div class="fval" style="color:var(--al)">${FMT(total)}</div></div>
-    <div class="fc"><div class="flab">Reembolso recebido</div><div class="fval" style="color:#4a9e6b">${FMT(recebido)}</div></div>
-    <div class="fc"><div class="flab">A receber</div><div class="fval" style="color:#c49a3c">${FMT(total-recebido)}</div></div>
+    <div class="fc"><div class="flab">Registros</div><div class="fval" style="color:var(--t2)">${trips.length}</div></div>
     ${Object.entries(byTipo).map(([k,v])=>`<div class="fc"><div class="flab">${TRANSP_TIPOS[k]?.icon||'🚗'} ${k}</div><div class="fval" style="color:${TRANSP_TIPOS[k]?.color||'var(--t2)'};">${FMT(v)}</div></div>`).join('')}
   `;
-  checkTranspFixBanner();
   if(!trips.length){
     listEl.innerHTML='<div class="empty">Nenhum transporte registrado em '+MNAMES[transpMonth]+' '+transpYear+'.<br><br><button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button></div>';
     return;
   }
+  // Agrupar por dia
   const byDay={};
   trips.forEach(t=>{if(!byDay[t.date])byDay[t.date]=[];byDay[t.date].push(t);});
   listEl.innerHTML=Object.entries(byDay).map(([date,dayTrips])=>{
     const dayTotal=dayTrips.reduce((s,t)=>s+t.value,0);
     const d=new Date(date+'T12:00:00');
-    const wd=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const weekDays=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
     return `<div style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--b)">
-        <div style="font-size:12px;font-weight:600;color:var(--t)">${wd[d.getDay()]}, ${FD(date)}</div>
+        <div style="font-size:12px;font-weight:600;color:var(--t)">${weekDays[d.getDay()]}, ${FD(date)}</div>
         <div style="font-size:12px;color:var(--m)">Total: <strong style="color:var(--t)">${FMT(dayTotal)}</strong></div>
       </div>
       ${dayTrips.map(t=>{
         const tipo=TRANSP_TIPOS[t.tipo]||{color:'var(--ac)',icon:'🚗'};
         const trechos=t.trechos||[{direcao:'',destino:t.destino,tipo:t.tipo,value:t.value,obs:t.obs}];
-        const rs=t.reembolsoStatus||'A receber';
-        const si=transpStatusInfo(rs);
-        const payDate=transpPayDate(t.date);
         return `<div class="item" style="margin-bottom:8px;border-left:3px solid ${tipo.color};flex-direction:column;align-items:stretch">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${trechos.length>1?'10px':'0'};flex-wrap:wrap;gap:6px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${trechos.length>1?'10px':'0'}">
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <span style="font-size:13px;font-weight:600">${tipo.icon} ${t.destino||'Deslocamento'}</span>
               <span class="bdg" style="background:${tipo.color}22;color:${tipo.color};font-size:10px">${t.tipo}</span>
               <span style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500">${FMT(t.value)}</span>
-              <span style="font-size:10px;color:var(--m)">receb. ${FD(payDate)}</span>
             </div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <button onclick="cycleTranspStatus('${t.id}')" style="background:${si.bg};border:1px solid ${si.c}55;border-radius:4px;padding:4px 10px;color:${si.c};cursor:pointer;font-size:10px;font-weight:600;letter-spacing:0.8px;font-family:'DM Sans',sans-serif">${si.label} ↺</button>
+            <div style="display:flex;gap:6px">
               <button onclick="openTransp('${t.id}')" style="background:none;border:1px solid var(--b2);border-radius:4px;padding:4px 8px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
               <button onclick="delTransp('${t.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:4px;padding:4px 8px;color:#b85454;cursor:pointer;font-size:11px">×</button>
             </div>
@@ -1906,69 +1704,42 @@ function removeTrecho(i){
 function saveTransp(id){
   const date=document.getElementById('tr-date').value;
   if(!date){toast('Selecione a data','err');return;}
+  // Coletar trechos
   const trechoEls=document.querySelectorAll('.trecho-item');
-  const trechos=[];let totalVal=0;
+  const trechos=[];
+  let totalVal=0;
   trechoEls.forEach(el=>{
     const val=parseFloat(el.querySelector('.tr-val').value)||0;
-    trechos.push({direcao:el.querySelector('.tr-dir').value,destino:el.querySelector('.tr-dest').value,tipo:el.querySelector('.tr-tipo').value,value:val,obs:el.querySelector('.tr-obs').value.trim()});
+    trechos.push({
+      direcao:el.querySelector('.tr-dir').value,
+      destino:el.querySelector('.tr-dest').value,
+      tipo:el.querySelector('.tr-tipo').value,
+      value:val,
+      obs:el.querySelector('.tr-obs').value.trim()
+    });
     totalVal+=val;
   });
   if(!trechos.length||totalVal<=0){toast('Informe ao menos um trecho com valor','err');return;}
-  const c=gc();
-  const prev=id?(c.transportes||[]).find(x=>x.id===id):null;
-  const trip={id:id||String(Date.now()),date,destino:trechos[0].destino,tipo:trechos[0].tipo,value:totalVal,obs:trechos.map(t=>t.obs).filter(Boolean).join(' | '),trechos,reembolsoStatus:prev?prev.reembolsoStatus||'A receber':'A receber',gainId:prev?prev.gainId||null:null};
+  // Para compatibilidade, manter campos legados com o primeiro trecho
+  const trip={
+    id:id||String(Date.now()),
+    date,
+    destino:trechos[0].destino,
+    tipo:trechos[0].tipo,
+    value:totalVal,
+    obs:trechos.map(t=>t.obs).filter(Boolean).join(' | '),
+    trechos
+  };
   uc(c=>{
     if(!c.transportes)c.transportes=[];
     if(id){const idx=c.transportes.findIndex(x=>x.id===id);if(idx>=0)c.transportes[idx]=trip;else c.transportes.push(trip);}
     else c.transportes.push(trip);
   });
-  if(trip.reembolsoStatus==='Recebido') syncTranspGain(trip,'Recebido');
   closeMo();renderTransporte();
   toast(id?'Atualizado!':'Transporte registrado!');
 }
 
-function syncTranspGain(trip,novoStatus){
-  const cl=gc();
-  const d=new Date(trip.date+'T12:00:00');
-  const payDate=new Date(d.getFullYear(),d.getMonth()+1,1).toISOString().split('T')[0];
-  const desc='Reembolso transporte — '+cl.name+' ('+MNAMES[d.getMonth()]+'/'+d.getFullYear()+')';
-  if(novoStatus==='Recebido'){
-    if(trip.gainId){
-      const idx=pfData.gains.findIndex(g=>g.id===trip.gainId);
-      if(idx>=0){pfData.gains[idx].description=desc;pfData.gains[idx].value=trip.value;pfData.gains[idx].date=payDate;}
-      else pfData.gains.push({id:trip.gainId,description:desc,value:trip.value,date:payDate,source:'Reembolso transporte',fromTransp:true});
-    } else {
-      const gainId='transp_'+trip.id;
-      pfData.gains.push({id:gainId,description:desc,value:trip.value,date:payDate,source:'Reembolso transporte',fromTransp:true});
-      uc(c=>{const tr=(c.transportes||[]).find(x=>x.id===trip.id);if(tr)tr.gainId=gainId;});
-    }
-    savePF();
-  } else {
-    if(trip.gainId){
-      pfData.gains=pfData.gains.filter(g=>g.id!==trip.gainId);
-      uc(c=>{const tr=(c.transportes||[]).find(x=>x.id===trip.id);if(tr)tr.gainId=null;});
-      savePF();
-    }
-  }
-}
-
-function cycleTranspStatus(id){
-  const c=gc();
-  const t=(c.transportes||[]).find(x=>x.id===id);if(!t)return;
-  const statuses=['A receber','Recebido','Em atraso'];
-  const novo=statuses[(statuses.indexOf(t.reembolsoStatus||'A receber')+1)%statuses.length];
-  uc(c=>{const tr=(c.transportes||[]).find(x=>x.id===id);if(tr)tr.reembolsoStatus=novo;});
-  const updatedT=(gc().transportes||[]).find(x=>x.id===id);
-  if(updatedT) syncTranspGain(updatedT,novo);
-  renderTransporte();
-  const msgs={'Recebido':'✓ Lançado nos ganhos de '+FD(transpPayDate(updatedT.date))+'!','A receber':'Status: A receber','Em atraso':'Status: Em atraso'};
-  toast(msgs[novo]||'Status atualizado');
-}
-
 function delTransp(id){
-  const c=gc();
-  const t=(c.transportes||[]).find(x=>x.id===id);
-  if(t&&t.gainId){pfData.gains=pfData.gains.filter(g=>g.id!==t.gainId);savePF();}
   uc(c=>{c.transportes=(c.transportes||[]).filter(x=>x.id!==id);});
   renderTransporte();toast('Excluído');
 }
@@ -1985,17 +1756,20 @@ function renderConteudos(){
     const tagObj=idea.tagId?getTag(idea.tagId):(idea.tag?getTagByName(idea.tag):null);
     const tagColor=tagObj?tagObj.color:'var(--ac)';
     const tagName=tagObj?tagObj.name:'';
-    return `<div class="item" style="align-items:center;border-left:3px solid ${tagColor};padding:8px 12px;margin-bottom:6px">
-      <div style="flex:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <div style="font-size:13px;font-weight:600;color:var(--t)">${idea.title}</div>
-        ${tagName?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:${tagColor}22;color:${tagColor};border:1px solid ${tagColor}44">${tagName}</span>`:''}
-        ${idea.type?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:var(--s2);color:var(--t2)">${idea.type}</span>`:''}
-        ${idea.desc?`<span style="font-size:11px;color:var(--m);margin-left:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px">${idea.desc}</span>`:''}
+    return `<div class="item" style="align-items:flex-start;border-left:3px solid ${tagColor}">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <div style="font-size:13px;font-weight:600;color:var(--t)">${idea.title}</div>
+          ${tagName?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:${tagColor}22;color:${tagColor};border:1px solid ${tagColor}44">${tagName}</span>`:''}
+          ${idea.type?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:var(--s2);color:var(--t2)">${idea.type}</span>`:''}
+        </div>
+        ${idea.desc?`<div style="font-size:12px;color:var(--m);line-height:1.6;white-space:pre-wrap;margin-bottom:8px">${idea.desc}</div>`:''}
+        ${idea.ref?`<div style="font-size:11px;color:var(--m)">📎 <a href="${idea.ref}" target="_blank" style="color:var(--al)">${idea.ref.length>40?idea.ref.substring(0,40)+'...':idea.ref}</a></div>`:''}
       </div>
-      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:12px">
-        <button onclick="agendarConteudo('${idea.id}')" style="background:var(--adim);border:1px solid var(--ab);border-radius:6px;padding:5px 11px;color:var(--al);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;white-space:nowrap">Agendar</button>
-        <button onclick="openConteudo('${idea.id}')" style="background:none;border:1px solid var(--b2);border-radius:4px;padding:5px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
-        <button onclick="delConteudo('${idea.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:4px;padding:5px 8px;color:#b85454;cursor:pointer;font-size:11px">×</button>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;margin-left:12px">
+        <button onclick="agendarConteudo('${idea.id}')" style="background:var(--adim);border:1px solid var(--ab);border-radius:6px;padding:6px 12px;color:var(--al);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;white-space:nowrap">📅 Agendar</button>
+        <button onclick="openConteudo('${idea.id}')" style="background:none;border:1px solid var(--b2);border-radius:4px;padding:4px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
+        <button onclick="delConteudo('${idea.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:4px;padding:4px 8px;color:#b85454;cursor:pointer;font-size:11px">×</button>
       </div>
     </div>`;
   }).join('');
@@ -2252,16 +2026,18 @@ function nextMonthVal(c){
   return(c.payments||[]).filter(p=>p.status==='A receber'&&p.date&&p.date.startsWith(pfx)).reduce((a,p)=>a+p.value,0);
 }
 function renderClients(){
-  renderStats();renderClientList();updateEntregasBadge();
+  renderStats();renderClientList();
 }
 function renderStats(){
   const nm=new Date();nm.setMonth(nm.getMonth()+1);
   const at=clients.filter(c=>c.status==='Ativo').length;
   const pa=clients.filter(c=>c.status==='Pausado').length;
+  const rec=clients.reduce((a,c)=>a+(c.payments||[]).filter(p=>p.status==='Pago').reduce((s,p)=>s+p.value,0),0);
   const ar=clients.reduce((a,c)=>a+nextMonthVal(c),0);
   document.getElementById('sg').innerHTML=
     '<div class="sc"><div class="sl">Clientes ativos</div><div class="sv" style="color:var(--green)">'+at+'</div></div>'+
     '<div class="sc"><div class="sl">Pausados</div><div class="sv" style="color:var(--yellow)">'+pa+'</div></div>'+
+    '<div class="sc"><div class="sl">Total recebido</div><div class="sv" style="color:var(--al)">'+FMT(rec)+'</div></div>'+
     '<div class="sc"><div class="sl">A receber em '+MNAMES[nm.getMonth()]+'</div><div class="sv" style="color:var(--red)">'+FMT(ar)+'</div></div>';
 }
 function renderClientList(){
@@ -2312,7 +2088,7 @@ function openClient(id){
   payYear=new Date().getFullYear();
   payMonth=new Date().getMonth();
   showAllPaysFlag=false;
-  renderCal();renderPosts();renderPayments();renderInvoice();renderSeqRuler();
+  renderCal();renderPosts();renderPayments();renderInvoice();
   swTab('perfil',document.querySelector('.tb[data-tab="perfil"]'));
   // Carregar status Google Calendar com refresh automático
   setTimeout(async ()=>{
@@ -2329,12 +2105,13 @@ function swTab(t,b){
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tb').forEach(x=>x.classList.remove('active'));
   document.getElementById('tp-'+t).classList.add('active');b.classList.add('active');
-  if(t==='calendario'){renderCal();renderSeqRuler();}
+  if(t==='calendario') renderCal();
   if(t==='financeiro') renderPayments();
   if(t==='cobranca') renderInvoice();
   if(t==='conteudos') renderConteudos();
   if(t==='transporte') renderTransporte();
   if(t==='transporte') renderTransp();
+  if(t==='ideias') renderIdeias();
   if(t==='tarefas') renderTasks();
 }
 function sf(k,v){uc(c=>{
@@ -2375,8 +2152,6 @@ function goToday(){calY=new Date().getFullYear();calM=new Date().getMonth();rend
 function renderCal(){
   const c=gc();if(!c)return;
   document.getElementById('cml').textContent=MNAMES[calM]+' '+calY;
-  const cmlBottom=document.getElementById('cml-bottom');
-  if(cmlBottom) cmlBottom.textContent=MNAMES[calM]+' '+calY;
   const fd=new Date(calY,calM,1).getDay(),dim=new Date(calY,calM+1,0).getDate(),dp=new Date(calY,calM,0).getDate();
   const today=new Date();today.setHours(0,0,0,0);
   const pbd={};
@@ -3171,9 +2946,27 @@ async function loadPayEvents(){
     el.innerHTML='<span style="color:var(--m)">Nenhum evento encontrado.</span>';
     return;
   }
-  // Lista global de importados (não por cliente)
+  // Lista global de importados (IDs já usados)
   const importados=JSON.parse(localStorage.getItem('ge_gcal_imported')||'[]');
-  const pendentes=events.filter(ev=>!importados.includes(ev.id));
+  const c2=gc();
+  const pagamentos=c2?c2.payments||[]:[];
+
+  // Filtrar eventos que já foram importados OU já têm pagamento com mesma data de cirurgia
+  const pendentes=events.filter(ev=>{
+    if(importados.includes(ev.id)) return false;
+    const evDate=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
+    const evTitle=(ev.summary||'').toLowerCase().trim();
+    // Verificar se já existe pagamento com mesma data de cirurgia E nome parecido
+    const jaLancado=pagamentos.some(p=>{
+      if(!p.dateCirug||p.dateCirug!==evDate) return false;
+      // Comparar nome do paciente (primeiras palavras do título do evento)
+      const nomeEvento=evTitle.split(/[-–—·]/)[0].trim();
+      const nomePag=(p.patient||p.description||'').toLowerCase().trim().split(/[-–—·]/)[0].trim();
+      return nomePag.length>2&&(nomeEvento.includes(nomePag)||nomePag.includes(nomeEvento));
+    });
+    return !jaLancado;
+  });
+
   if(!pendentes.length){
     el.innerHTML='<span style="color:var(--green)">✓ Todos os eventos já foram lançados!</span>';
     return;
@@ -4272,386 +4065,6 @@ setInterval(()=>{
   });
 },30000);
 
-
-// ═══════════════════════════════════════════════════════════════════════
-// EMPRÉSTIMOS
-// ═══════════════════════════════════════════════════════════════════════
-function renderLoans(){
-  const sumEl=document.getElementById('loans-summary');
-  const listEl=document.getElementById('loans-list');
-  if(!sumEl||!listEl)return;
-  const loans=pfData.loans||[];
-  const totalEmp=loans.reduce((s,l)=>s+l.total,0);
-  const totalPago=loans.reduce((s,l)=>s+(l.payments||[]).reduce((a,p)=>a+p.value,0),0);
-  const emAberto=loans.filter(l=>loanStatus(l)==='Em aberto').length;
-  const quitados=loans.filter(l=>loanStatus(l)==='Quitado').length;
-  sumEl.innerHTML=`
-    <div class="fc"><div class="flab">Total emprestado</div><div class="fval" style="color:var(--al)">${FMT(totalEmp)}</div></div>
-    <div class="fc"><div class="flab">Total recebido</div><div class="fval" style="color:#4a9e6b">${FMT(totalPago)}</div></div>
-    <div class="fc"><div class="flab">Saldo em aberto</div><div class="fval" style="color:#c49a3c">${FMT(totalEmp-totalPago)}</div></div>
-    <div class="fc"><div class="flab">Em aberto</div><div class="fval" style="color:var(--t2)">${emAberto}</div></div>
-    <div class="fc"><div class="flab">Quitados</div><div class="fval" style="color:#4a9e6b">${quitados}</div></div>
-  `;
-  if(!loans.length){listEl.innerHTML='<div class="empty">Nenhum empréstimo registrado.<br><br><button class="btn bp bsm" onclick="openLoan(null)">+ Novo empréstimo</button></div>';return;}
-  listEl.innerHTML=loans.map(loan=>{
-    const paid=(loan.payments||[]).reduce((s,p)=>s+p.value,0);
-    const saldo=loan.total-paid;
-    const pct=Math.min(100,Math.round((paid/loan.total)*100));
-    const st=loanStatus(loan);
-    const si=loanStatusInfo(st);
-    return `<div class="item" style="flex-direction:column;align-items:stretch;margin-bottom:14px;border-left:3px solid ${si.c}">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--t)">${loan.person}</div>
-          <div style="font-size:11px;color:var(--m);margin-top:2px">${loan.desc||''} ${loan.date?'· Emp. '+FD(loan.date):''}</div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--al)">${FMT(loan.total)}</span>
-          <span style="background:${si.bg};color:${si.c};border:1px solid ${si.c}55;border-radius:4px;padding:3px 9px;font-size:10px;font-weight:600;letter-spacing:0.8px">${st.toUpperCase()}</span>
-          <button onclick="openAddPayment('${loan.id}')" style="background:rgba(74,158,107,0.15);border:1px solid rgba(74,158,107,0.4);border-radius:4px;padding:4px 9px;color:#4a9e6b;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">+ Pagamento</button>
-          <button onclick="openLoan('${loan.id}')" style="background:none;border:1px solid var(--b2);border-radius:4px;padding:4px 8px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
-          <button onclick="deleteLoan('${loan.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:4px;padding:4px 8px;color:#b85454;cursor:pointer;font-size:11px">×</button>
-        </div>
-      </div>
-      <div style="background:var(--b);border-radius:4px;height:6px;margin-bottom:8px;overflow:hidden">
-        <div style="background:${pct>=100?'#4a9e6b':'#2A6B7C'};height:100%;width:${pct}%;border-radius:4px;transition:width 0.4s"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--m);margin-bottom:${loan.payments&&loan.payments.length?'10px':'0'}">
-        <span>Recebido: <strong style="color:#4a9e6b">${FMT(paid)}</strong> (${pct}%)</span>
-        <span>Saldo: <strong style="color:${saldo>0?'#c49a3c':'#4a9e6b'}">${FMT(saldo)}</strong></span>
-      </div>
-      ${(loan.payments&&loan.payments.length)?`<div style="border-top:1px solid var(--b);padding-top:8px">
-        <div style="font-size:10px;color:var(--m);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">Pagamentos recebidos</div>
-        ${loan.payments.map((p,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--b);font-size:12px">
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="color:var(--m)">${FD(p.date)}</span>
-            ${p.note?`<span style="color:var(--m);font-style:italic">${p.note}</span>`:''}
-          </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-weight:600;color:#4a9e6b">${FMT(p.value)}</span>
-            <button onclick="deletePayment('${loan.id}',${i})" style="background:none;border:none;color:#b85454;cursor:pointer;font-size:12px;padding:0 2px">×</button>
-          </div>
-        </div>`).join('')}
-      </div>`:''}
-    </div>`;
-  }).join('');
-}
-function loanStatus(loan){
-  const paid=(loan.payments||[]).reduce((s,p)=>s+p.value,0);
-  if(paid>=loan.total)return 'Quitado';
-  if(loan.dueDate&&new Date(loan.dueDate+'T12:00:00')<new Date())return 'Em atraso';
-  return 'Em aberto';
-}
-function loanStatusInfo(st){
-  if(st==='Quitado')  return {bg:'rgba(74,158,107,0.15)',c:'#4a9e6b'};
-  if(st==='Em atraso')return {bg:'rgba(184,84,84,0.15)', c:'#b85454'};
-  return {bg:'rgba(196,154,60,0.12)',c:'#c49a3c'};
-}
-function openLoan(id){
-  const loan=id?(pfData.loans||[]).find(l=>l.id===id):null;
-  showMo(loan?'Editar empréstimo':'Novo empréstimo',`
-    <div class="fg2"><label>Para quem *</label><input id="loan-person" placeholder="Nome da pessoa" value="${loan?loan.person:''}"></div>
-    <div class="fg2"><label>Valor total emprestado *</label><input id="loan-total" type="number" step="0.01" placeholder="0,00" value="${loan?loan.total:''}"></div>
-    <div class="fg2"><label>Data do empréstimo</label><input id="loan-date" type="date" value="${loan?loan.date:new Date().toISOString().split('T')[0]}"></div>
-    <div class="fg2"><label>Data de vencimento (opcional)</label><input id="loan-due" type="date" value="${loan&&loan.dueDate?loan.dueDate:''}"></div>
-    <div class="fg2"><label>Descrição (opcional)</label><input id="loan-desc" placeholder="Ex: ajuda com aluguel" value="${loan?loan.desc||'':''}"></div>
-    <button class="btn bp" style="width:100%;margin-top:8px" onclick="saveLoan('${id||''}')">${loan?'Salvar alterações':'Registrar empréstimo'}</button>
-  `);
-}
-function saveLoan(id){
-  const person=document.getElementById('loan-person').value.trim();
-  const total=parseFloat(document.getElementById('loan-total').value)||0;
-  const date=document.getElementById('loan-date').value;
-  const dueDate=document.getElementById('loan-due').value||null;
-  const desc=document.getElementById('loan-desc').value.trim();
-  if(!person){toast('Informe o nome da pessoa','err');return;}
-  if(total<=0){toast('Informe o valor emprestado','err');return;}
-  const existing=id?(pfData.loans||[]).find(l=>l.id===id):null;
-  const loan={id:id||'loan_'+Date.now(),person,total,date,dueDate,desc,payments:existing?existing.payments||[]:[],};
-  if(!pfData.loans)pfData.loans=[];
-  if(id){const idx=pfData.loans.findIndex(l=>l.id===id);if(idx>=0)pfData.loans[idx]=loan;else pfData.loans.push(loan);}
-  else pfData.loans.push(loan);
-  savePF();closeMo();renderLoans();toast(id?'Empréstimo atualizado!':'Empréstimo registrado!');
-}
-function openAddPayment(loanId){
-  const loan=(pfData.loans||[]).find(l=>l.id===loanId);if(!loan)return;
-  const paid=(loan.payments||[]).reduce((s,p)=>s+p.value,0);
-  showMo('Registrar pagamento de '+loan.person,`
-    <div style="background:var(--s2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--m)">
-      Saldo restante: <strong style="color:#c49a3c;font-family:'Cormorant Garamond',serif;font-size:16px">${FMT(loan.total-paid)}</strong>
-    </div>
-    <div class="fg2"><label>Valor recebido *</label><input id="pay-value" type="number" step="0.01" placeholder="0,00"></div>
-    <div class="fg2"><label>Data do recebimento *</label><input id="pay-date" type="date" value="${new Date().toISOString().split('T')[0]}"></div>
-    <div class="fg2"><label>Observação (opcional)</label><input id="pay-note" placeholder="Ex: via Pix"></div>
-    <button class="btn bp" style="width:100%;margin-top:8px" onclick="savePayment('${loanId}')">Confirmar recebimento</button>
-  `);
-}
-function savePayment(loanId){
-  const value=parseFloat(document.getElementById('pay-value').value)||0;
-  const date=document.getElementById('pay-date').value;
-  const note=document.getElementById('pay-note').value.trim();
-  if(value<=0){toast('Informe o valor recebido','err');return;}
-  if(!date){toast('Informe a data','err');return;}
-  const loan=(pfData.loans||[]).find(l=>l.id===loanId);if(!loan)return;
-  if(!loan.payments)loan.payments=[];
-  loan.payments.push({value,date,note});
-  loan.payments.sort((a,b)=>a.date.localeCompare(b.date));
-  pfData.gains.push({id:'pay_'+Date.now(),description:'Pagamento empréstimo — '+loan.person,value,date,source:'Empréstimo',fromLoan:true,loanId});
-  savePF();closeMo();renderLoans();toast('✓ Pagamento registrado e lançado nos ganhos!');
-}
-function deletePayment(loanId,idx){
-  const loan=(pfData.loans||[]).find(l=>l.id===loanId);if(!loan)return;
-  const pay=loan.payments[idx];
-  pfData.gains=pfData.gains.filter(g=>!(g.fromLoan&&g.loanId===loanId&&g.value===pay.value&&g.date===pay.date));
-  loan.payments.splice(idx,1);
-  savePF();renderLoans();toast('Pagamento removido');
-}
-function deleteLoan(id){
-  pfData.gains=pfData.gains.filter(g=>!(g.fromLoan&&g.loanId===id));
-  pfData.loans=pfData.loans.filter(l=>l.id!==id);
-  savePF();renderLoans();toast('Empréstimo excluído');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// RÉGUA DE SEQUÊNCIA DE CONTEÚDO
-// ═══════════════════════════════════════════════════════════════════════
-const SEQ_COLORS=['#2A6B7C','#4a9e6b','#c49a3c','#e86a3a','#9b59b6','#e1306c','#1DB954','#b85454','#5a8fd4','#7f8c8d'];
-function getClientSeq(){const c=gc();if(!c)return[];if(!c.seqRuler)c.seqRuler=[];return c.seqRuler.filter(i=>i&&i.label&&i.color);}
-function renderSeqRuler(){
-  const items=getClientSeq();
-  const container=document.getElementById('seq-items');
-  const empty=document.getElementById('seq-empty');
-  if(!container)return;
-  if(!items.length){if(empty)empty.style.display='';container.querySelectorAll('.seq-chip').forEach(e=>e.remove());return;}
-  if(empty)empty.style.display='none';
-  container.querySelectorAll('.seq-chip').forEach(e=>e.remove());
-  items.forEach((item,i)=>{
-    const chip=document.createElement('div');
-    chip.className='seq-chip';chip.draggable=true;chip.dataset.idx=i;
-    chip.style.cssText=`display:inline-flex;align-items:center;gap:6px;background:${item.color}22;border:1.5px solid ${item.color}88;border-radius:20px;padding:5px 12px;cursor:grab;user-select:none;font-size:12px;font-weight:500;color:${item.color};transition:opacity 0.15s`;
-    chip.innerHTML=`<span style="font-size:11px;color:${item.color}99;font-weight:700;min-width:14px">${i+1}</span><span>${item.label}</span><button onclick="deleteSeqItem(${i})" style="background:none;border:none;color:${item.color}99;cursor:pointer;font-size:13px;line-height:1;padding:0 0 0 4px;margin:0">×</button>`;
-    chip.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',i);chip.style.opacity='0.4';});
-    chip.addEventListener('dragend',()=>{chip.style.opacity='1';});
-    chip.addEventListener('dragover',e=>{e.preventDefault();chip.style.background=item.color+'44';});
-    chip.addEventListener('dragleave',()=>{chip.style.background=item.color+'22';});
-    chip.addEventListener('drop',e=>{
-      e.preventDefault();chip.style.background=item.color+'22';
-      const from=parseInt(e.dataTransfer.getData('text/plain'));const to=i;
-      if(from===to)return;
-      const seq=getClientSeq();const moved=seq.splice(from,1)[0];seq.splice(to,0,moved);
-      uc(c=>{c.seqRuler=seq;});renderSeqRuler();
-    });
-    container.appendChild(chip);
-  });
-}
-function openAddSeqItem(){
-  const seq=getClientSeq();
-  const used=seq.filter(i=>i&&i.color).map(i=>i.color);
-  const nextColor=SEQ_COLORS.find(c=>!used.includes(c))||SEQ_COLORS[seq.length%SEQ_COLORS.length]||SEQ_COLORS[0];
-  const colorOpts=SEQ_COLORS.map(c=>`<label style="cursor:pointer"><input type="radio" name="seq-color" value="${c}" ${c===nextColor?'checked':''} style="display:none"><div style="width:22px;height:22px;border-radius:50%;background:${c};border:2px solid ${c===nextColor?'#fff':'transparent'};outline:2px solid ${c===nextColor?c:'transparent'};transition:all 0.15s"></div></label>`).join('');
-  showMo('Novo tipo de conteúdo',`
-    <div class="fg2" style="margin-bottom:14px"><label>Nome do tipo *</label><input id="seq-label" placeholder="Ex: Depoimento, Cirurgia, Caixinha..."></div>
-    <div class="fg2" style="margin-bottom:16px"><label>Cor</label><div id="seq-color-wrap" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">${colorOpts}</div></div>
-    <button class="btn bp" style="width:100%" onclick="saveSeqItem()">Adicionar à régua</button>
-  `);
-  setTimeout(()=>{document.querySelectorAll('input[name="seq-color"]').forEach(r=>{r.addEventListener('change',()=>{document.querySelectorAll('input[name="seq-color"]').forEach(x=>{const d=x.nextElementSibling;d.style.borderColor=x.checked?'#fff':'transparent';d.style.outlineColor=x.checked?x.value:'transparent';});});});},100);
-}
-function saveSeqItem(){
-  const label=document.getElementById('seq-label').value.trim();
-  const colorEl=document.querySelector('input[name="seq-color"]:checked');
-  if(!label){toast('Dê um nome ao tipo de conteúdo','err');return;}
-  const color=colorEl?colorEl.value:SEQ_COLORS[0];
-  uc(c=>{if(!c.seqRuler)c.seqRuler=[];c.seqRuler.push({label,color,id:'sq'+Date.now()});});
-  closeMo();renderSeqRuler();toast('Tipo adicionado à régua!');
-}
-function deleteSeqItem(idx){
-  uc(c=>{if(!c.seqRuler)return;c.seqRuler.splice(idx,1);});
-  renderSeqRuler();
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// CENTRAL DE ENTREGAS
-// ═══════════════════════════════════════════════════════════════════════
-let entregasYear=new Date().getFullYear();
-let entregasMonth=new Date().getMonth();
-let entregasFilter='todos';
-
-function chEntregasMonth(d){
-  entregasMonth+=d;
-  if(entregasMonth>11){entregasMonth=0;entregasYear++;}
-  if(entregasMonth<0){entregasMonth=11;entregasYear--;}
-  renderEntregas();
-}
-function setEntregasFilter(f){
-  entregasFilter=f;
-  ['todos','pendente','entregue'].forEach(x=>{
-    const btn=document.getElementById('ef-'+x);
-    if(btn) btn.className=x===f?'btn bp bsm':'btn bg bsm';
-  });
-  renderEntregas();
-}
-
-function getAllPosts(){
-  // Sempre ler do localStorage para garantir dados atualizados
-  const allClients=JSON.parse(localStorage.getItem('ge_v3')||'[]');
-  const all=[];
-  allClients.forEach(c=>{
-    (c.posts||[]).forEach(p=>{
-      const ini=c.name?c.name.substring(0,2).toUpperCase():'??';
-      all.push({...p, _clientName:c.name||'', _clientId:c.id, _clientColor:c.color||'#2A6B7C', _clientAvatar:c.avatar||ini});
-    });
-  });
-  return all;
-}
-
-function updateEntregasBadge(){
-  const badge=document.getElementById('entregas-badge');
-  if(!badge) return;
-  const today=new Date();today.setHours(0,0,0,0);
-  const d1=new Date(today);d1.setDate(today.getDate()+1);
-  const d2=new Date(today);d2.setDate(today.getDate()+2);
-  const s1=d1.toISOString().split('T')[0];
-  const s2=d2.toISOString().split('T')[0];
-  // Conta posts dos próximos 2 dias ainda não entregues
-  const count=getAllPosts().filter(p=>(p.date===s1||p.date===s2)&&!p.entregue&&p.status!=='Publicado'&&p.status!=='Cancelado').length;
-  if(count>0){badge.textContent=count;badge.style.display='inline-block';}
-  else badge.style.display='none';
-}
-
-function renderEntregas(){
-  const ms=entregasYear+'-'+String(entregasMonth+1).padStart(2,'0');
-  const label=document.getElementById('entregas-month-label');
-  if(label) label.textContent=MNAMES[entregasMonth]+' '+entregasYear;
-
-  const sumEl=document.getElementById('entregas-summary');
-  const listEl=document.getElementById('entregas-list');
-  if(!listEl) return;
-
-  // Atualizar visual dos botões de filtro sem recursão
-  ['todos','pendente','entregue'].forEach(x=>{
-    const btn=document.getElementById('ef-'+x);
-    if(btn) btn.className=x===entregasFilter?'btn bp bsm':'btn bg bsm';
-  });
-
-  const today=new Date();today.setHours(0,0,0,0);
-  const tomorrow=new Date(today);tomorrow.setDate(today.getDate()+1);
-  const tomorrowStr=tomorrow.toISOString().split('T')[0];
-
-  let posts=getAllPosts().filter(p=>p.date&&p.date.startsWith(ms));
-
-  // Classificar cada post: 0=pendente futuro/hoje, 1=pendente passado, 2=cancelado, 3=entregue
-  const todayStr=today.toISOString().split('T')[0];
-  function postPrioridade(p){
-    if(p.entregue||p.status==='Publicado') return 3;        // entregue → baixo
-    if(p.status==='Cancelado') return 2;                    // cancelado → quase baixo
-    if(p.date<todayStr) return 1;                           // pendente passado → meio
-    return 0;                                               // pendente futuro → topo
-  }
-  posts.sort((a,b)=>{
-    const pa=postPrioridade(a), pb=postPrioridade(b);
-    if(pa!==pb) return pa-pb;
-    return a.date.localeCompare(b.date);
-  });
-
-  const total=posts.length;
-  const entregues=posts.filter(p=>p.entregue||p.status==='Publicado').length;
-  const pendentes=posts.filter(p=>!p.entregue&&p.status!=='Publicado'&&p.status!=='Cancelado').length;
-  const amanha=posts.filter(p=>p.date===tomorrowStr&&!p.entregue&&p.status!=='Publicado').length;
-
-  if(sumEl) sumEl.innerHTML=`
-    <div class="fc"><div class="flab">Total do mês</div><div class="fval" style="color:var(--t2)">${total}</div></div>
-    <div class="fc"><div class="flab">Entregues</div><div class="fval" style="color:#4a9e6b">${entregues}</div></div>
-    <div class="fc"><div class="flab">Pendentes</div><div class="fval" style="color:#c49a3c">${pendentes}</div></div>
-    ${amanha>0?`<div class="fc" style="border-color:rgba(42,107,124,0.4)"><div class="flab">Para amanhã</div><div class="fval" style="color:var(--ac)">${amanha}</div></div>`:''}
-  `;
-
-  // Aplicar filtro
-  if(entregasFilter==='pendente') posts=posts.filter(p=>!p.entregue&&p.status!=='Publicado'&&p.status!=='Cancelado');
-  else if(entregasFilter==='entregue') posts=posts.filter(p=>p.entregue||p.status==='Publicado');
-
-  if(!posts.length){
-    listEl.innerHTML='<div class="empty">Nenhum conteúdo '+
-      (entregasFilter==='pendente'?'pendente':entregasFilter==='entregue'?'entregue':'agendado')+
-      ' em '+MNAMES[entregasMonth]+' '+entregasYear+'.</div>';
-    return;
-  }
-
-  // Agrupar por data
-  const byDay={};
-  posts.forEach(p=>{if(!byDay[p.date])byDay[p.date]=[];byDay[p.date].push(p);});
-
-  const weekDays=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-  listEl.innerHTML=Object.entries(byDay).map(([date,dayPosts])=>{
-    const d=new Date(date+'T12:00:00');
-    const isToday=date===today.toISOString().split('T')[0];
-    const isTomorrow=date===tomorrowStr;
-    const isPast=d<today;
-    const dayLabel=isToday?'Hoje':isTomorrow?'Amanhã':weekDays[d.getDay()]+', '+FD(date);
-    const dayColor=isToday?'var(--ac)':isTomorrow?'#4a9e6b':isPast?'#b85454':'var(--t2)';
-
-    return `<div style="margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--b)">
-        <div style="font-size:13px;font-weight:700;color:${dayColor}">${dayLabel}</div>
-        ${isToday?'<span style="background:rgba(42,107,124,0.2);color:var(--ac);border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600">HOJE</span>':''}
-        ${isTomorrow?'<span style="background:rgba(74,158,107,0.2);color:#4a9e6b;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600">AMANHÃ</span>':''}
-        ${isPast&&!isToday?'<span style="background:rgba(184,84,84,0.15);color:#b85454;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:600">PASSADO</span>':''}
-        <span style="font-size:11px;color:var(--m);margin-left:auto">${dayPosts.length} conteúdo${dayPosts.length>1?'s':''}</span>
-      </div>
-      ${dayPosts.map(p=>{
-        const isEntregue=p.entregue||p.status==='Publicado';
-        const isCancelado=p.status==='Cancelado';
-        const tagObj=p.tagId?getTag(p.tagId):(p.tag?getTagByName(p.tag):null);
-        const tagColor=tagObj?tagObj.color:'var(--ac)';
-        const tagName=tagObj?tagObj.name:(p.tag||'');
-        const plats=p.platforms||[p.platform].filter(Boolean);
-        const borderCol=isCancelado?'rgba(184,84,84,0.3)':isEntregue?'rgba(74,158,107,0.4)':tagColor;
-        const bgCol=isCancelado?'rgba(184,84,84,0.04)':isEntregue?'rgba(74,158,107,0.04)':'var(--s)';
-        const opac=isCancelado||isEntregue?0.65:1;
-        return `<div class="item" style="margin-bottom:8px;border-left:3px solid ${borderCol};background:${bgCol};opacity:${opac};flex-wrap:wrap;gap:8px">
-          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-            <div style="width:28px;height:28px;border-radius:50%;background:${p._clientColor};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">${p._clientAvatar}</div>
-          </div>
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-              <span style="font-size:13px;font-weight:600;color:${isCancelado||isEntregue?'var(--m)':'var(--t)'}${isCancelado?';text-decoration:line-through':isEntregue?';text-decoration:line-through':''}">${p.title||'Sem título'}</span>
-              ${tagName?`<span style="font-size:10px;padding:1px 7px;border-radius:3px;background:${tagColor}22;color:${tagColor};border:1px solid ${tagColor}44">${tagName}</span>`:''}
-              ${p.type?`<span style="font-size:10px;padding:1px 7px;border-radius:3px;background:var(--s2);color:var(--m)">${p.type}</span>`:''}
-              ${isCancelado?'<span style="font-size:10px;padding:1px 7px;border-radius:3px;background:rgba(184,84,84,0.15);color:#b85454;font-weight:600">CANCELADO</span>':''}
-            </div>
-            <div style="font-size:11px;color:var(--m);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <span style="font-weight:500;color:${p._clientColor}">${p._clientName}</span>
-              ${plats.length?`<span>${plats.join(' · ')}</span>`:''}
-            </div>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
-            ${isCancelado
-              ? `<span style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.3);border-radius:4px;padding:4px 10px;color:#b85454;font-size:10px;font-weight:600;letter-spacing:0.8px">CANCELADO</span>`
-              : `<button onclick="toggleEntregaStatus('${p._clientId}','${p.id}')" style="background:${isEntregue?'rgba(74,158,107,0.18)':'rgba(196,154,60,0.12)'};border:1px solid ${isEntregue?'rgba(74,158,107,0.5)':'rgba(196,154,60,0.5)'};border-radius:4px;padding:4px 10px;color:${isEntregue?'#4a9e6b':'#c49a3c'};cursor:pointer;font-size:10px;font-weight:600;letter-spacing:0.8px;font-family:'DM Sans',sans-serif">${isEntregue?'ENTREGUE ↺':'PENDENTE ↺'}</button>`
-            }
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
-  }).join('');
-}
-
-function toggleEntregaStatus(clientId, postId){
-  // Buscar cliente diretamente no array global (uc() só edita o cliente aberto)
-  const ci=clients.findIndex(c=>String(c.id)===String(clientId));
-  if(ci<0){toast('Cliente não encontrado','err');return;}
-  const pi=(clients[ci].posts||[]).findIndex(p=>String(p.id)===String(postId));
-  if(pi<0){toast('Post não encontrado','err');return;}
-  const p=clients[ci].posts[pi];
-  // Não alterar cancelados
-  if(p.status==='Cancelado'){toast('Este conteúdo está cancelado no calendário','err');return;}
-  const novoEntregue=!p.entregue;
-  clients[ci].posts[pi]={...p, entregue:novoEntregue, status:novoEntregue?'Publicado':p.status==='Publicado'?'Agendado':p.status};
-  saveClients();
-  updateEntregasBadge();
-  renderEntregas();
-  try{if(cid===clients[ci].id){renderCal();renderPosts();}}catch(e){}
-  toast(novoEntregue?'✓ Marcado como entregue!':'Marcado como pendente');
-}
 </script>
 </body>
 </html>
