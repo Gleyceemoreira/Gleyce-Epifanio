@@ -4305,10 +4305,14 @@ function getAllPosts(){
 function updateEntregasBadge(){
   const badge=document.getElementById('entregas-badge');if(!badge)return;
   const today=new Date();today.setHours(0,0,0,0);
-  const d1=new Date(today);d1.setDate(today.getDate()+1);
+  const todayStr=today.toISOString().split('T')[0];
   const d2=new Date(today);d2.setDate(today.getDate()+2);
-  const s1=d1.toISOString().split('T')[0],s2=d2.toISOString().split('T')[0];
-  const count=getAllPosts().filter(p=>(p.date===s1||p.date===s2)&&!p.entregue&&p.status!=='Publicado'&&p.status!=='Cancelado').length;
+  const s2=d2.toISOString().split('T')[0];
+  // Conta: atrasados (passado) + hoje + próximos 2 dias — todos pendentes
+  const count=getAllPosts().filter(p=>{
+    if(!p.date||p.entregue||p.status==='Publicado'||p.status==='Cancelado') return false;
+    return p.date<=s2; // tudo até daqui 2 dias (inclui atrasados e hoje)
+  }).length;
   if(count>0){badge.textContent=count;badge.style.display='inline-block';}else badge.style.display='none';
 }
 function renderEntregas(){
