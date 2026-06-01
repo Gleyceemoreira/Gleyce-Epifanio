@@ -3258,13 +3258,23 @@ function renderInvoice(){
     html+='<div style="margin-top:20px;border-top:1px solid #eee;padding-top:20px">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Reembolso de Transporte</div>'+
       '<table class="invtbl"><thead><tr><th>Data</th><th>Destino</th><th>Tipo</th><th style="text-align:right">Valor</th></tr></thead><tbody>'+
-      transportes.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>`
-        <tr>
-          <td style="color:#555;white-space:nowrap">${FD(t.date)}</td>
-          <td>${t.destino||'—'}</td>
-          <td style="color:#555">${t.tipo}</td>
-          <td style="text-align:right"><strong>${FMT(t.value)}</strong></td>
-        </tr>`).join('')+
+      transportes.sort((a,b)=>a.date.localeCompare(b.date)).flatMap(t=>{
+        // Se tem trechos individuais, mostrar cada um separado
+        const trechos=t.trechos&&t.trechos.length>1?t.trechos:[{
+          destino:t.destino||'—',
+          tipo:t.tipo,
+          direcao:t.trechos&&t.trechos[0]?t.trechos[0].direcao||'':'',
+          value:t.value,
+          obs:t.obs||''
+        }];
+        return trechos.map((tr,i)=>`
+          <tr>
+            <td style="color:#555;white-space:nowrap">${i===0?FD(t.date):''}</td>
+            <td>${tr.direcao?`<span style="color:#888;font-size:10px">${tr.direcao} — </span>`:''}<strong>${tr.destino||'—'}</strong>${tr.obs?`<br><span style="font-size:10px;color:#888">${tr.obs}</span>`:''}</td>
+            <td style="color:#555">${tr.tipo}</td>
+            <td style="text-align:right"><strong>${FMT(tr.value)}</strong></td>
+          </tr>`);
+      }).join('')+
       '</tbody></table>'+
       '<div style="text-align:right;margin-top:8px;font-size:13px;color:#555">Total transporte: <strong style="font-size:16px;color:#111">'+FMT(totalTransp)+'</strong></div>'+
       '<div class="invtot" style="margin-top:12px"><div class="invtotl">Total Geral</div><div class="invtotv">'+FMT(total+totalTransp)+'</div></div>'+
