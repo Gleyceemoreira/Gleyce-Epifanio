@@ -370,8 +370,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
       <button class="tb active" data-tab="perfil" onclick="swTab('perfil',this)">Perfil</button>
       <button class="tb" data-tab="calendario" onclick="swTab('calendario',this)">Calendário</button>
       <button class="tb" data-tab="financeiro" onclick="swTab('financeiro',this)">Financeiro</button>
-      <button class="tb" data-tab="ideias" onclick="swTab('ideias',this)">Ideias</button>
-      <button class="tb" data-tab="conteudos" onclick="swTab('conteudos',this)">Conteúdos</button>
+      <button class="tb" data-tab="conteudos" onclick="swTab('conteudos',this)">Banco de Conteúdo</button>
       <button class="tb" data-tab="transporte" onclick="swTab('transporte',this)">Transporte</button>
       <button class="tb" data-tab="cobranca" onclick="swTab('cobranca',this)">Cobrança</button>
     </div>
@@ -456,69 +455,63 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
         </div>
       </div>
       <!-- FINANCEIRO CLIENTE -->
-      <div class="tp" id="tp-financeiro">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-          <div style="display:flex;align-items:center;gap:12px">
-            <button class="cnb" onclick="chPayMonth(-1)">‹</button>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;letter-spacing:1px" id="pay-month-title"></div>
-            <button class="cnb" onclick="chPayMonth(1)">›</button>
+      <div class="tp" id="tp-financeiro" style="padding:0;display:flex;flex-direction:column">
+        <div style="position:sticky;top:-32px;z-index:50;background:var(--bg);border-bottom:1px solid var(--b);padding:16px 32px 14px;margin:-32px -32px 0 -32px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <button class="cnb" onclick="chPayMonth(-1)">‹</button>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;letter-spacing:1px" id="pay-month-title"></div>
+              <button class="cnb" onclick="chPayMonth(1)">›</button>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn bg bsm" onclick="toggleAllPays()">Ver todos</button>
+              <button class="btn bp bsm" onclick="openPay(null)">+ Novo lançamento</button>
+            </div>
           </div>
-          <div style="display:flex;gap:8px">
-            <button class="btn bg bsm" onclick="toggleAllPays()">Ver todos</button>
-            <button class="btn bp bsm" onclick="openPay(null)">+ Novo lançamento</button>
-          </div>
+          <div class="fs" id="fsum" style="margin-bottom:0"></div>
         </div>
-        <div class="fs" id="fsum"></div>
-        <div id="paylist"></div>
+        <div id="paylist" style="padding:20px 32px 32px;flex:1"></div>
       </div>
-      <!-- IDEIAS -->
-      <div class="tp" id="tp-ideias">
-        <div class="sh">
-          <div>
-            <div class="st">Banco de Ideias</div>
-            <div style="font-size:12px;color:var(--m);margin-top:3px">Conteúdos em desenvolvimento — sem data ainda</div>
+      <div class="tp" id="tp-conteudos" style="padding:0;display:flex;flex-direction:column">
+        <div style="position:sticky;top:-32px;z-index:50;background:var(--bg);border-bottom:1px solid var(--b);padding:16px 32px 14px;margin:-32px -32px 0 -32px">
+          <div class="sh" style="margin-bottom:0">
+            <div>
+              <div class="st">Banco de Conteúdo</div>
+              <div style="font-size:12px;color:var(--m);margin-top:4px">Ideias que ainda não têm data definida. Defina uma data para mover ao calendário.</div>
+            </div>
+            <button class="btn bp bsm" onclick="openConteudo(null)">+ Nova ideia</button>
           </div>
-          <button class="btn bp bsm" onclick="openIdeia(null)">+ Nova ideia</button>
         </div>
-        <div id="ideias-list"></div>
-      </div>
-      <!-- CONTEÚDOS (ideias sem data) -->
-      <div class="tp" id="tp-conteudos">
-        <div class="sh">
-          <div>
-            <div class="st">Banco de Conteúdos</div>
-            <div style="font-size:12px;color:var(--m);margin-top:4px">Ideias que ainda não têm data definida. Defina uma data para mover ao calendário.</div>
-          </div>
-          <button class="btn bp bsm" onclick="openConteudo(null)">+ Nova ideia</button>
-        </div>
-        <div id="conteudo-list"></div>
+        <div id="conteudo-list" style="padding:20px 32px 32px;flex:1"></div>
       </div>
       <!-- TRANSPORTE -->
-      <div class="tp" id="tp-transporte">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
-          <div style="display:flex;align-items:center;gap:12px">
-            <button class="cnb" onclick="chTranspMonth(-1)">‹</button>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;letter-spacing:1px" id="transp-month-title"></div>
-            <button class="cnb" onclick="chTranspMonth(1)">›</button>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <div style="display:flex;align-items:center;gap:8px;background:rgba(42,107,124,0.10);border:1px solid rgba(42,107,124,0.28);border-radius:8px;padding:7px 13px">
-              <span style="font-size:15px">🚌</span>
-              <div style="display:flex;flex-direction:column;gap:2px">
-                <span style="color:var(--m);font-size:9px;text-transform:uppercase;letter-spacing:0.8px">Transporte público</span>
-                <div style="display:flex;gap:10px;align-items:center">
-                  <span style="font-size:11px;color:var(--t2)">Ida+Volta <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:15px">R$ 18,76</strong></span>
-                  <span style="color:var(--b2);font-size:11px">·</span>
-                  <span style="font-size:11px;color:var(--t2)">Só ida/volta <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:15px">R$ 9,38</strong></span>
+      <div class="tp" id="tp-transporte" style="padding:0;display:flex;flex-direction:column">
+        <div style="position:sticky;top:-32px;z-index:50;background:var(--bg);border-bottom:1px solid var(--b);padding:16px 32px 14px;margin:-32px -32px 0 -32px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <button class="cnb" onclick="chTranspMonth(-1)">‹</button>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;letter-spacing:1px" id="transp-month-title"></div>
+              <button class="cnb" onclick="chTranspMonth(1)">›</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:8px;background:rgba(42,107,124,0.10);border:1px solid rgba(42,107,124,0.28);border-radius:8px;padding:7px 13px">
+                <span style="font-size:15px">🚌</span>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <span style="color:var(--m);font-size:9px;text-transform:uppercase;letter-spacing:0.8px">Transporte público</span>
+                  <div style="display:flex;gap:10px;align-items:center">
+                    <span style="font-size:11px;color:var(--t2)">Ida+Volta <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:15px">R$ 18,76</strong></span>
+                    <span style="color:var(--b2);font-size:11px">·</span>
+                    <span style="font-size:11px;color:var(--t2)">Só ida/volta <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:15px">R$ 9,38</strong></span>
+                  </div>
                 </div>
               </div>
+              <button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button>
             </div>
-            <button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button>
           </div>
+          <div id="transp-fix-banner"></div>
+          <div class="fs" id="transp-sum" style="margin-bottom:0"></div>
         </div>
-        <div id="transp-fix-banner"></div>
-        <div class="fs" id="transp-sum"></div>
-        <div id="transp-list"></div>
+        <div id="transp-list" style="padding:20px 32px 32px;flex:1"></div>
       </div>
       <!-- COBRANÇA -->
       <div class="tp" id="tp-cobranca">
@@ -2240,7 +2233,6 @@ function swTab(t,b){
   if(t==='conteudos') renderConteudos();
   if(t==='transporte') renderTransporte();
   if(t==='transporte') renderTransp();
-  if(t==='ideias') renderIdeias();
   if(t==='tarefas') renderTasks();
 }
 function sf(k,v){uc(c=>{
