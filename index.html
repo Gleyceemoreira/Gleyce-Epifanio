@@ -391,13 +391,26 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
       </div>
       <!-- CALENDÁRIO -->
       <div class="tp" id="tp-calendario">
-        <div class="cn2">
-          <button class="cnb" onclick="chMo(-1)">‹</button>
-          <div style="display:flex;align-items:center;gap:10px">
-            <div class="cm2" id="cml"></div>
-            <button class="cnb" onclick="goToday()" style="font-size:11px;padding:5px 12px;letter-spacing:0.5px">Hoje</button>
+        <!-- RÉGUA DE SEQUÊNCIA sticky -->
+        <div id="seq-ruler" style="position:sticky;top:-32px;z-index:50;background:var(--bg);border-bottom:1px solid var(--b);padding:10px 32px;margin:-32px -32px 0 -32px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px">
+            <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m)">Régua de sequência de conteúdo</div>
+            <button onclick="openAddSeqItem()" style="background:none;border:1px dashed var(--b2);border-radius:5px;padding:3px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">+ Tipo</button>
           </div>
-          <button class="cnb" onclick="chMo(1)">›</button>
+          <div id="seq-items" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:36px;padding:7px 10px;background:var(--s2);border:1px solid var(--b);border-radius:8px">
+            <span id="seq-empty" style="font-size:11px;color:var(--b2);font-style:italic">Adicione tipos de conteúdo para montar sua sequência...</span>
+          </div>
+        </div>
+        <!-- NAVEGAÇÃO DE MÊS sticky (logo abaixo da régua) -->
+        <div style="position:sticky;top:calc(-32px + 80px);z-index:49;background:var(--bg);border-bottom:1px solid var(--b);padding:10px 32px;margin:0 -32px 16px -32px">
+          <div class="cn2" style="margin-bottom:0">
+            <button class="cnb" onclick="chMo(-1)">‹</button>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="cm2" id="cml"></div>
+              <button class="cnb" onclick="goToday()" style="font-size:11px;padding:5px 12px;letter-spacing:0.5px">Hoje</button>
+            </div>
+            <button class="cnb" onclick="chMo(1)">›</button>
+          </div>
         </div>
         <div class="cgrid" id="cgrid"></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
@@ -2096,7 +2109,7 @@ function openClient(id){
   payYear=new Date().getFullYear();
   payMonth=new Date().getMonth();
   showAllPaysFlag=false;
-  renderCal();renderPosts();renderPayments();renderInvoice();
+  renderCal();renderPosts();renderPayments();renderInvoice();renderSeqRuler();
   swTab('perfil',document.querySelector('.tb[data-tab="perfil"]'));
   // Carregar status Google Calendar com refresh automático
   setTimeout(async ()=>{
@@ -2113,7 +2126,7 @@ function swTab(t,b){
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tb').forEach(x=>x.classList.remove('active'));
   document.getElementById('tp-'+t).classList.add('active');b.classList.add('active');
-  if(t==='calendario') renderCal();
+  if(t==='calendario'){renderCal();renderSeqRuler();}
   if(t==='financeiro') renderPayments();
   if(t==='cobranca') renderInvoice();
   if(t==='conteudos') renderConteudos();
