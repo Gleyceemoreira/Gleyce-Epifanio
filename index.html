@@ -1267,29 +1267,7 @@ async function gcalEnsureToken(){
   return ok;
 }
 
-function connectGoogleCalendarGlobal(){
-  // Salvar estado atual antes de redirecionar
-  localStorage.setItem('gcal_return_cid', cid||'');
-  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
-    'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
-    '&response_type=token'+
-    '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=consent';
-  window.location.href=authUrl;
-}
-
-function connectGoogleCalendar(){
-  // Salvar o cliente atual para voltar depois
-  localStorage.setItem('gcal_return_cid', cid||'');
-  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
-    'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
-    '&response_type=token'+
-    '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=consent';
-  window.location.href=authUrl;
-}
+// connectGoogleCalendar definida abaixo via popup
 
 function updateGcalSidebarStatus(){
   const btn=document.getElementById('gcal-global-btn');
@@ -1312,16 +1290,7 @@ function updateGcalSidebarStatus(){
 // Atualizar status do sidebar a cada 30 segundos
 setInterval(updateGcalSidebarStatus, 30000);
 
-function connectGoogleCalendar(){
-  localStorage.setItem('gcal_return_cid', cid||'');
-  const authUrl='https://accounts.google.com/o/oauth2/v2/auth?'+
-    'client_id='+GCAL_CLIENT_ID+
-    '&redirect_uri='+encodeURIComponent(window.location.origin+window.location.pathname)+
-    '&response_type=token'+
-    '&scope='+encodeURIComponent(GCAL_SCOPE)+
-    '&prompt=consent';
-  window.location.href=authUrl;
-}
+
 
 async function loadCalendarList(){
   const statusEl=document.getElementById('gcal-status-perfil');
