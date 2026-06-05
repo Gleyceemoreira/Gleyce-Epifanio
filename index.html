@@ -297,9 +297,6 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Notas Fiscais
     <span id="notas-badge" style="margin-left:auto;background:#c49a3c;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
   </button>
-  <button class="nav-item" id="nav-pf-emprestimos" onclick="goView('pf-emprestimos')" style="font-size:12px">
-    <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Empréstimos
-  </button>
   <button class="nav-item" id="nav-entregas" onclick="goView('entregas')">
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span> Entregas
     <span id="entregas-badge" style="margin-left:auto;background:var(--ac);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
@@ -326,7 +323,14 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
     <button class="nav-item" id="nav-pf-graficos" onclick="goView('pf-graficos')" style="font-size:12px">
       <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Gráficos
     </button>
+    <button class="nav-item" id="nav-pf-emprestimos" onclick="goView('pf-emprestimos')" style="font-size:12px">
+      <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Empréstimos
+    </button>
   </div>
+
+  <button class="nav-item" id="nav-anotacoes" onclick="goView('anotacoes')">
+    <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Anotações
+  </button>
 
   <div class="sidebar-bottom">
     <div id="gcal-global-status" style="margin-bottom:8px;font-size:11px"></div>
@@ -528,14 +532,32 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
       </div>
       <!-- COBRANÇA -->
       <div class="tp" id="tp-cobranca">
-        <div class="sh">
-          <div class="st">Resumo de cobrança</div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <select id="inv-month" onchange="renderInvoice()" style="width:auto;padding:7px 12px;font-size:12px">
-              <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
-            </select>
-            <select id="inv-year" onchange="renderInvoice()" style="width:auto;padding:7px 12px;font-size:12px"></select>
-            <button class="btn bp bsm" onclick="downloadPDF()">⬇ Baixar PDF</button>
+        <div style="position:sticky;top:-32px;z-index:50;background:var(--bg);border-bottom:1px solid var(--b);padding:16px 32px 14px;margin:-32px -32px 16px -32px">
+          <div class="sh" style="margin-bottom:12px">
+            <div class="st">Resumo de cobrança</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="inv-month" onchange="renderInvoice()" style="width:auto;padding:7px 12px;font-size:12px">
+                <option value="0">Janeiro</option><option value="1">Fevereiro</option><option value="2">Março</option><option value="3">Abril</option><option value="4">Maio</option><option value="5">Junho</option><option value="6">Julho</option><option value="7">Agosto</option><option value="8">Setembro</option><option value="9">Outubro</option><option value="10">Novembro</option><option value="11">Dezembro</option>
+              </select>
+              <select id="inv-year" onchange="renderInvoice()" style="width:auto;padding:7px 12px;font-size:12px"></select>
+              <button class="btn bp bsm" onclick="downloadPDF()">⬇ Baixar PDF</button>
+            </div>
+          </div>
+          <!-- PAINEL NOTA FISCAL DO MÊS -->
+          <div id="nf-painel" style="padding:12px 16px;background:var(--s2);border:1px solid var(--b);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--m);margin-bottom:4px">Nota Fiscal do mês</div>
+              <div id="nf-valor-servicos" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--al)">—</div>
+              <div id="nf-obs" style="font-size:11px;color:var(--m);margin-top:2px">Somente serviços pagos (sem transporte)</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+              <div id="nf-status-badge" style="font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;cursor:pointer" onclick="toggleNFStatus()">—</div>
+              <div id="nf-numero-wrap" style="display:none;flex-direction:column;gap:4px;align-items:flex-end">
+                <input id="nf-numero-input" type="text" placeholder="Nº da nota" style="border:1px solid var(--b2);border-radius:6px;padding:5px 10px;background:var(--s);color:var(--t);font-size:12px;width:160px;font-family:'DM Sans',sans-serif">
+                <button onclick="saveNFNumero()" style="background:var(--ac);border:none;border-radius:5px;padding:4px 12px;color:#fff;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Salvar nº</button>
+              </div>
+              <div id="nf-numero-display" style="font-size:11px;color:var(--m)"></div>
+            </div>
           </div>
         </div>
         <div id="inv-preview"></div>
@@ -683,6 +705,16 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
 </div>
 
 <!-- VIEW: TAREFAS GLOBAL -->
+<div class="view" id="view-anotacoes">
+  <div class="page-header" style="flex-wrap:wrap;gap:10px">
+    <div><div class="page-title">Anotações</div><div class="page-sub">Bloco de notas pessoal</div></div>
+    <button class="btn bp bsm" onclick="openAnotacao(null)">+ Nova anotação</button>
+  </div>
+  <div class="main">
+    <div id="anotacoes-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px"></div>
+  </div>
+</div>
+
 <div class="view" id="view-notas">
   <div class="page-header" style="flex-wrap:wrap;gap:10px">
     <div><div class="page-title">Notas Fiscais</div><div class="page-sub">Controle de emissões · base para Imposto de Renda</div></div>
@@ -1218,6 +1250,7 @@ function goView(name){
   if(name==='pf-emprestimos') renderLoans();
   if(name==='entregas') renderEntregas();
   if(name==='notas') renderNotas();
+  if(name==='anotacoes') renderAnotacoes();
   if(name==='tarefas-global') renderGlobalTasks();
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -3124,7 +3157,8 @@ function renderInvoice(){
   const yr=parseInt(document.getElementById('inv-year').value);
   const mS=yr+'-'+String(mo+1).padStart(2,'0');
   // Atualizar painel de NF
-  renderNFPainel(c, mS, mo, yr);
+  // Garantir que painel NF atualiza mesmo antes do inv-year estar preenchido
+  try{ renderNFPainel(c, mS, mo, yr); }catch(e){}
   // Filtrar pela data da CIRURGIA (mês em que o serviço foi executado)
   const pays=(c.payments||[]).filter(function(p){
     const dataRef=p.dateCirug||p.date||'';
@@ -4512,8 +4546,11 @@ function renderNotas(){
 
   // Coletar todas as notas do ano
   const meses = [];
+  // NF a partir de maio/2026
+  const nfInicio = '2026-05';
   for(let m = 0; m < 12; m++){
     const ms = notasYear + '-' + String(m+1).padStart(2,'0');
+    if(ms < nfInicio) continue; // ignorar meses antes de maio/2026
     const notasMes = [];
     allClients.forEach(c => {
       const total = calcTotalServicosPagesMes(c, ms);
@@ -4584,6 +4621,115 @@ function renderNotas(){
       </div>
     `;
   }).join('');
+}
+
+// ═══════════════════════════ BLOCO DE NOTAS ════════════════════════════════
+const NOTA_CORES = [
+  { bg: '#2A6B7C22', border: '#2A6B7C', label: 'Azul' },
+  { bg: 'rgba(74,158,107,0.15)', border: '#4a9e6b', label: 'Verde' },
+  { bg: 'rgba(196,154,60,0.15)', border: '#c49a3c', label: 'Amarelo' },
+  { bg: 'rgba(184,84,84,0.12)', border: '#b85454', label: 'Vermelho' },
+  { bg: 'rgba(155,89,182,0.15)', border: '#9b59b6', label: 'Roxo' },
+  { bg: 'rgba(90,143,212,0.15)', border: '#5a8fd4', label: 'Índigo' },
+  { bg: 'rgba(232,106,58,0.15)', border: '#e86a3a', label: 'Laranja' },
+  { bg: 'rgba(127,140,141,0.15)', border: '#7f8c8d', label: 'Cinza' },
+];
+
+function getAnotacoes(){
+  return JSON.parse(localStorage.getItem('gleyce_anotacoes') || '[]');
+}
+function saveAnotacoes(list){
+  localStorage.setItem('gleyce_anotacoes', JSON.stringify(list));
+}
+
+function renderAnotacoes(){
+  const listEl = document.getElementById('anotacoes-list');
+  if(!listEl) return;
+  const list = getAnotacoes();
+  if(!list.length){
+    listEl.innerHTML = '<div class="empty" style="grid-column:1/-1">Nenhuma anotação ainda.<br><br><button class="btn bp bsm" onclick="openAnotacao(null)">+ Nova anotação</button></div>';
+    return;
+  }
+  listEl.innerHTML = list.map((n, i) => {
+    const cor = NOTA_CORES[n.cor || 0];
+    const data = n.updatedAt ? new Date(n.updatedAt).toLocaleDateString('pt-BR') : '';
+    return `
+      <div style="background:${cor.bg};border:1.5px solid ${cor.border}55;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;position:relative;min-height:140px">
+        ${n.titulo ? `<div style="font-size:13px;font-weight:600;color:var(--t);border-bottom:1px solid ${cor.border}33;padding-bottom:6px">${n.titulo}</div>` : ''}
+        <div style="font-size:12px;color:var(--t2);flex:1;white-space:pre-wrap;line-height:1.6">${n.texto || ''}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+          <span style="font-size:10px;color:var(--m)">${data}</span>
+          <div style="display:flex;gap:6px">
+            <button onclick="openAnotacao(${i})" style="background:none;border:1px solid ${cor.border}44;border-radius:5px;padding:3px 9px;color:${cor.border};cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
+            <button onclick="delAnotacao(${i})" style="background:none;border:1px solid rgba(184,84,84,0.3);border-radius:5px;padding:3px 8px;color:#b85454;cursor:pointer;font-size:11px">×</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openAnotacao(idx){
+  const list = getAnotacoes();
+  const n = idx !== null ? list[idx] : null;
+  const corOpts = NOTA_CORES.map((c, i) =>
+    `<label style="cursor:pointer;display:inline-block">
+      <input type="radio" name="nota-cor" value="${i}" ${(n ? n.cor : 0) === i ? 'checked' : ''} style="display:none">
+      <div style="width:24px;height:24px;border-radius:50%;background:${c.bg};border:2px solid ${c.border};outline:${(n ? n.cor : 0) === i ? '2px solid '+c.border : 'none'};outline-offset:2px;transition:all 0.15s"></div>
+    </label>`
+  ).join('');
+
+  showMo(n ? 'Editar anotação' : 'Nova anotação', `
+    <div class="fg2" style="margin-bottom:10px"><label>Título (opcional)</label>
+      <input id="nota-titulo" placeholder="Ex: Ideias, Lembretes..." value="${n ? n.titulo || '' : ''}">
+    </div>
+    <div class="fg2" style="margin-bottom:12px"><label>Texto *</label>
+      <textarea id="nota-texto" rows="5" style="width:100%;resize:vertical;padding:10px;border:1px solid var(--b2);border-radius:8px;background:var(--s);color:var(--t);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6">${n ? n.texto || '' : ''}</textarea>
+    </div>
+    <div class="fg2" style="margin-bottom:16px"><label>Cor</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="nota-cor-wrap">${corOpts}</div>
+    </div>
+    <button class="btn bp" style="width:100%" onclick="saveAnotacao(${idx !== null ? idx : 'null'})">${n ? 'Salvar' : 'Adicionar anotação'}</button>
+  `);
+  // Atualizar outline ao mudar cor
+  setTimeout(() => {
+    document.querySelectorAll('input[name="nota-cor"]').forEach(r => {
+      r.addEventListener('change', () => {
+        document.querySelectorAll('input[name="nota-cor"]').forEach((x, i) => {
+          const d = x.nextElementSibling;
+          const c = NOTA_CORES[i];
+          d.style.outline = x.checked ? '2px solid '+c.border : 'none';
+        });
+      });
+    });
+  }, 100);
+}
+
+function saveAnotacao(idx){
+  const titulo = document.getElementById('nota-titulo').value.trim();
+  const texto = document.getElementById('nota-texto').value.trim();
+  const corEl = document.querySelector('input[name="nota-cor"]:checked');
+  const cor = corEl ? parseInt(corEl.value) : 0;
+  if(!texto){ toast('Escreva algo na anotação','err'); return; }
+  const list = getAnotacoes();
+  const nota = { titulo, texto, cor, updatedAt: Date.now() };
+  if(idx !== null && idx !== 'null'){
+    list[parseInt(idx)] = nota;
+  } else {
+    list.unshift(nota); // nova nota vai para o início
+  }
+  saveAnotacoes(list);
+  closeMo();
+  renderAnotacoes();
+  toast(idx !== null && idx !== 'null' ? 'Anotação atualizada!' : '✓ Anotação salva!');
+}
+
+function delAnotacao(idx){
+  const list = getAnotacoes();
+  list.splice(idx, 1);
+  saveAnotacoes(list);
+  renderAnotacoes();
+  toast('Anotação excluída');
 }
 </script>
 </body>
