@@ -791,7 +791,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
 // ═══════════════════════════════════════════
 //  DADOS GLOBAIS
 // ═══════════════════════════════════════════
-const PIX={name:'Gleyce Epifânio',key:'67104124000198',bank:'Banco Santander',type:'CNPJ'};
+const PIX={name:'Gleyce Moreira Epifânio',key:'67.104.124/0001-98',bank:'Nubank',type:'CNPJ'};
 const MNAMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SCOL={'Ativo':'#4a9e6b','Pausado':'#c49a3c','Encerrado':'#b85454'};
 const PCOL={'Pago':{bg:'rgba(74,158,107,0.15)',c:'#4a9e6b'},'A receber':{bg:'rgba(184,84,84,0.15)',c:'#b85454'},'Pendente':{bg:'rgba(196,154,60,0.12)',c:'#c49a3c'},'Atrasado':{bg:'rgba(184,84,84,0.2)',c:'#b85454'}};
@@ -4565,20 +4565,45 @@ function renderNotas(){
     if(notasMes.length) meses.push({ ms, m, notasMes });
   }
 
-  // Limite de IR (simplificado — referência 2026)
-  const limiteIR = 33888; // aprox. 2x isenção mensal * 12
-  const pctAnual = Math.min(100, Math.round((totalEmitidas / limiteIR) * 100));
+  // Limites MEI 2025/2026
+  const teteMEI = 81000; // teto de faturamento bruto do MEI
+  const limiteIRPF = 35584; // limite de rendimentos tributáveis para obrigar declaração IRPF
+  const isencaoServicos = 0.32; // 32% de isenção para prestadores de serviço
+  
+  // Rendimentos tributáveis estimados (68% do faturamento)
+  const tributavelEstimado = Math.round(totalEmitidas * (1 - isencaoServicos));
+  
+  // Teto MEI usa totalAnual (faturamento bruto real, emitidas + pendentes)
+  const pctMEI = Math.min(100, Math.round((totalAnual / teteMEI) * 100));
+  // IR: usa tributável baseado no totalAnual (mais correto)
+  const tributavelReal = Math.round(totalAnual * (1 - isencaoServicos));
+  const pctIR = Math.min(100, Math.round((tributavelReal / limiteIRPF) * 100));
 
   resumoEl.innerHTML = `
-    <div class="fc"><div class="flab">Total emitido no ano</div><div class="fval" style="color:#4a9e6b">${FMT(totalEmitidas)}</div></div>
+    <div class="fc"><div class="flab">Total faturado no ano</div><div class="fval" style="color:var(--al)">${FMT(totalAnual)}</div></div>
+    <div class="fc"><div class="flab">NFs emitidas</div><div class="fval" style="color:#4a9e6b">${FMT(totalEmitidas)}</div></div>
     <div class="fc"><div class="flab">Pendentes de emissão</div><div class="fval" style="color:#c49a3c">${FMT(totalPendentes)}</div></div>
-    <div class="fc"><div class="flab">NFs emitidas</div><div class="fval" style="color:var(--t2)">${countEmitidas}</div></div>
-    <div class="fc" style="min-width:220px;flex-direction:column;align-items:flex-start">
-      <div class="flab" style="margin-bottom:6px">Faixa de renda anual (referência IR)</div>
-      <div style="width:100%;background:var(--b);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px">
-        <div style="background:${pctAnual>80?'#b85454':pctAnual>50?'#c49a3c':'#4a9e6b'};height:100%;width:${pctAnual}%;border-radius:4px;transition:width 0.4s"></div>
+    <div class="fc" style="min-width:260px;flex-direction:column;align-items:flex-start;gap:10px">
+      <div style="width:100%">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span class="flab">🏢 Teto MEI — R$ 81.000/ano</span>
+          <span style="font-size:11px;font-weight:700;color:${pctMEI>90?'#b85454':pctMEI>70?'#c49a3c':'#4a9e6b'}">${pctMEI}%</span>
+        </div>
+        <div style="width:100%;background:var(--b);border-radius:4px;height:7px;overflow:hidden;margin-bottom:3px">
+          <div style="background:${pctMEI>90?'#b85454':pctMEI>70?'#c49a3c':'#4a9e6b'};height:100%;width:${pctMEI}%;border-radius:4px;transition:width 0.4s"></div>
+        </div>
+        <div style="font-size:10px;color:var(--m)">${FMT(totalAnual)} de ${FMT(teteMEI)} · acima desse valor sai do MEI</div>
       </div>
-      <div style="font-size:10px;color:var(--m)">${FMT(totalEmitidas)} de ${FMT(limiteIR)} (${pctAnual}%)</div>
+      <div style="width:100%">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span class="flab">📋 Obrigação IRPF — rendimento tributável</span>
+          <span style="font-size:11px;font-weight:700;color:${pctIR>90?'#b85454':pctIR>70?'#c49a3c':'#5a8fd4'}">${pctIR}%</span>
+        </div>
+        <div style="width:100%;background:var(--b);border-radius:4px;height:7px;overflow:hidden;margin-bottom:3px">
+          <div style="background:${pctIR>90?'#b85454':pctIR>70?'#c49a3c':'#5a8fd4'};height:100%;width:${pctIR}%;border-radius:4px;transition:width 0.4s"></div>
+        </div>
+        <div style="font-size:10px;color:var(--m)">${FMT(tributavelReal)} tributáveis (68% do bruto) de ${FMT(limiteIRPF)} · precisa declarar se ultrapassar</div>
+      </div>
     </div>
   `;
 
