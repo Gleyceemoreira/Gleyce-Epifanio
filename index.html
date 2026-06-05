@@ -293,6 +293,10 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
   <button class="nav-item active" id="nav-clientes" onclick="goView('clientes')">
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Meus Clientes
   </button>
+  <button class="nav-item" id="nav-notas" onclick="goView('notas')">
+    <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Notas Fiscais
+    <span id="notas-badge" style="margin-left:auto;background:#c49a3c;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
+  </button>
   <button class="nav-item" id="nav-pf-emprestimos" onclick="goView('pf-emprestimos')" style="font-size:12px">
     <span class="nav-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Empréstimos
   </button>
@@ -679,6 +683,21 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
 </div>
 
 <!-- VIEW: TAREFAS GLOBAL -->
+<div class="view" id="view-notas">
+  <div class="page-header" style="flex-wrap:wrap;gap:10px">
+    <div><div class="page-title">Notas Fiscais</div><div class="page-sub">Controle de emissões · base para Imposto de Renda</div></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="cnb" onclick="chNotasYear(-1)">‹</button>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;letter-spacing:1px" id="notas-year-label"></div>
+      <button class="cnb" onclick="chNotasYear(1)">›</button>
+    </div>
+  </div>
+  <div class="main">
+    <div id="notas-resumo-anual" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px"></div>
+    <div id="notas-list"></div>
+  </div>
+</div>
+
 <div class="view" id="view-pf-emprestimos">
   <div class="page-header"><div><div class="page-title">Empréstimos</div><div class="page-sub">Valores emprestados e controle de pagamentos</div></div>
     <button class="btn bp bsm" onclick="openLoan(null)">+ Novo empréstimo</button></div>
@@ -740,7 +759,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
 // ═══════════════════════════════════════════
 //  DADOS GLOBAIS
 // ═══════════════════════════════════════════
-const PIX={name:'Gleyce Moreira Epifânio',key:'38623422805',bank:'Banco Santander',type:'CPF'};
+const PIX={name:'Gleyce Epifânio',key:'67104124000198',bank:'Banco Santander',type:'CNPJ'};
 const MNAMES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const SCOL={'Ativo':'#4a9e6b','Pausado':'#c49a3c','Encerrado':'#b85454'};
 const PCOL={'Pago':{bg:'rgba(74,158,107,0.15)',c:'#4a9e6b'},'A receber':{bg:'rgba(184,84,84,0.15)',c:'#b85454'},'Pendente':{bg:'rgba(196,154,60,0.12)',c:'#c49a3c'},'Atrasado':{bg:'rgba(184,84,84,0.2)',c:'#b85454'}};
@@ -1198,6 +1217,7 @@ function goView(name){
   if(name==='pf-graficos') renderGraficos();
   if(name==='pf-emprestimos') renderLoans();
   if(name==='entregas') renderEntregas();
+  if(name==='notas') renderNotas();
   if(name==='tarefas-global') renderGlobalTasks();
   document.getElementById('sidebar').classList.remove('open');
 }
@@ -2069,7 +2089,7 @@ function nextMonthVal(c){
   return(c.payments||[]).filter(p=>p.status==='A receber'&&p.date&&p.date.startsWith(pfx)).reduce((a,p)=>a+p.value,0);
 }
 function renderClients(){
-  renderStats();renderClientList();updateEntregasBadge();
+  renderStats();renderClientList();updateEntregasBadge();updateNotasBadge();
 }
 function renderStats(){
   const nm=new Date();nm.setMonth(nm.getMonth()+1);
@@ -3099,9 +3119,12 @@ function savePay(eid){
 // Cobrança/Invoice
 function renderInvoice(){
   const c=gc();if(!c)return;
+  updateNotasBadge();
   const mo=parseInt(document.getElementById('inv-month').value);
   const yr=parseInt(document.getElementById('inv-year').value);
   const mS=yr+'-'+String(mo+1).padStart(2,'0');
+  // Atualizar painel de NF
+  renderNFPainel(c, mS, mo, yr);
   // Filtrar pela data da CIRURGIA (mês em que o serviço foi executado)
   const pays=(c.payments||[]).filter(function(p){
     const dataRef=p.dateCirug||p.date||'';
@@ -3293,10 +3316,16 @@ function getMonthExpenses(){
   const items=[];
   pfData.expenses.forEach(exp=>{
     if(exp.recurring){
-      // Despesa recorrente — aparece todo mês com data gerada
-      const day=String(exp.recurringDay).padStart(2,'0');
-      const fakeDate=ms+'-'+day;
-      items.push({exp:{...exp,date:fakeDate},inst:null,instIdx:null,isRecurring:true});
+      // Despesa recorrente — só aparece a partir do mês de início definido
+      const startMs=exp.startMonth||'2026-01';
+      const [sy,sm]=startMs.split('-').map(Number);
+      const [cy,cm]=[curYear,curMonth+1];
+      const inicioOk=(cy>sy)||(cy===sy&&cm>=sm);
+      if(inicioOk){
+        const day=String(exp.recurringDay||1).padStart(2,'0');
+        const fakeDate=ms+'-'+day;
+        items.push({exp:{...exp,date:fakeDate},inst:null,instIdx:null,isRecurring:true});
+      }
     } else if(exp.installments){
       exp.installments.forEach((inst,i)=>{
         if(inst.date&&inst.date.startsWith(ms)) items.push({exp,inst,instIdx:i});
@@ -3481,6 +3510,7 @@ function openExpense(id){
         <div class="fg2"><label>Valor mensal (R$)</label><input type="number" id="e-rec-val" value="${exp?.recurring?exp.value:''}" step="0.01" placeholder="0,00"></div>
         <div class="fg2"><label>Dia do vencimento</label><input type="number" id="e-rec-day" value="${exp?.recurringDay||''}" min="1" max="31" placeholder="Ex: 10"></div>
       </div>
+      <div class="fg2"><label>A partir de (mês/ano)</label><input type="month" id="e-rec-start" value="${exp?.startMonth||new Date().toISOString().slice(0,7)}" style="flex:1"></div>
     </div>
     <div id="e-parcelado"${isInst?'':' style="display:none"'}>
       <div class="fg">
@@ -4343,6 +4373,218 @@ function gcalPopupAuth(onSuccess){
 }
 function connectGoogleCalendarGlobal(){gcalPopupAuth(()=>{updateGcalSidebarStatus();});}
 function connectGoogleCalendar(){gcalPopupAuth(()=>{try{loadCalendarList();}catch(e){}updateGcalSidebarStatus();});}
+
+// ═══════════════════════════ NOTAS FISCAIS ══════════════════════════════════
+let notasYear = new Date().getFullYear();
+function chNotasYear(d){ notasYear += d; renderNotas(); }
+
+// Retorna a chave para salvar NF: clientId + mes (ex: "cli123_2026-05")
+function nfKey(clientId, ms){ return 'nf_' + clientId + '_' + ms; }
+
+function getNFData(clientId, ms){
+  const key = nfKey(clientId, ms);
+  const raw = localStorage.getItem(key);
+  return raw ? JSON.parse(raw) : { status: 'pendente', numero: '' };
+}
+
+function setNFData(clientId, ms, data){
+  const key = nfKey(clientId, ms);
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Calcula total de serviços PAGOS do mês (sem transporte)
+function calcTotalServicosPagesMes(c, ms){
+  return (c.payments || [])
+    .filter(p => p.status === 'Pago' && (p.dateCirug || p.date || '').startsWith(ms))
+    .reduce((s, p) => s + p.value, 0);
+}
+
+function renderNFPainel(c, ms, mo, yr){
+  const painel = document.getElementById('nf-painel');
+  const valorEl = document.getElementById('nf-valor-servicos');
+  const statusEl = document.getElementById('nf-status-badge');
+  const numWrap = document.getElementById('nf-numero-wrap');
+  const numDisplay = document.getElementById('nf-numero-display');
+  const numInput = document.getElementById('nf-numero-input');
+  if(!painel || !valorEl || !statusEl) return;
+
+  const total = calcTotalServicosPagesMes(c, ms);
+  valorEl.textContent = total > 0 ? FMT(total) : 'R$ 0,00 (sem pagamentos pagos)';
+
+  const nf = getNFData(c.id, ms);
+
+  if(nf.status === 'emitida'){
+    statusEl.textContent = '✓ NF EMITIDA';
+    statusEl.style.background = 'rgba(74,158,107,0.15)';
+    statusEl.style.color = '#4a9e6b';
+    statusEl.style.border = '1px solid rgba(74,158,107,0.4)';
+    numWrap.style.display = 'flex';
+    numInput.value = nf.numero || '';
+    numDisplay.textContent = nf.numero ? 'Nº ' + nf.numero : 'Sem número registrado';
+  } else {
+    statusEl.textContent = '⚠ NF PENDENTE';
+    statusEl.style.background = 'rgba(196,154,60,0.12)';
+    statusEl.style.color = '#c49a3c';
+    statusEl.style.border = '1px solid rgba(196,154,60,0.4)';
+    numWrap.style.display = 'none';
+    numDisplay.textContent = '';
+  }
+
+  // Salvar contexto para toggleNFStatus e saveNFNumero
+  painel.dataset.clientId = c.id;
+  painel.dataset.ms = ms;
+  painel.dataset.total = total;
+  painel.dataset.moLabel = MNAMES[mo] + ' ' + yr;
+}
+
+function toggleNFStatus(){
+  const painel = document.getElementById('nf-painel');
+  if(!painel) return;
+  const clientId = painel.dataset.clientId;
+  const ms = painel.dataset.ms;
+  const nf = getNFData(clientId, ms);
+  nf.status = nf.status === 'emitida' ? 'pendente' : 'emitida';
+  if(nf.status === 'pendente') nf.numero = '';
+  setNFData(clientId, ms, nf);
+  const c = gc();
+  const mo = parseInt(ms.split('-')[1]) - 1;
+  const yr = parseInt(ms.split('-')[0]);
+  renderNFPainel(c, ms, mo, yr);
+  updateNotasBadge();
+  renderNotas();
+  toast(nf.status === 'emitida' ? '✓ Nota fiscal marcada como emitida!' : 'NF marcada como pendente');
+}
+
+function saveNFNumero(){
+  const painel = document.getElementById('nf-painel');
+  const input = document.getElementById('nf-numero-input');
+  if(!painel || !input) return;
+  const clientId = painel.dataset.clientId;
+  const ms = painel.dataset.ms;
+  const nf = getNFData(clientId, ms);
+  nf.numero = input.value.trim();
+  setNFData(clientId, ms, nf);
+  document.getElementById('nf-numero-display').textContent = nf.numero ? 'Nº ' + nf.numero : 'Sem número registrado';
+  renderNotas();
+  toast('✓ Número da NF salvo!');
+}
+
+function updateNotasBadge(){
+  const badge = document.getElementById('notas-badge');
+  if(!badge) return;
+  const allClients = JSON.parse(localStorage.getItem('ge_v3') || '[]');
+  const hoje = new Date();
+  const mesAtual = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0');
+  const mesPrev = hoje.getMonth() === 0
+    ? (hoje.getFullYear()-1) + '-12'
+    : hoje.getFullYear() + '-' + String(hoje.getMonth()).padStart(2,'0');
+
+  let pendentes = 0;
+  [mesAtual, mesPrev].forEach(ms => {
+    allClients.forEach(c => {
+      const total = calcTotalServicosPagesMes(c, ms);
+      if(total > 0){
+        const nf = getNFData(c.id, ms);
+        if(nf.status !== 'emitida') pendentes++;
+      }
+    });
+  });
+
+  if(pendentes > 0){ badge.textContent = pendentes; badge.style.display = 'inline-block'; }
+  else badge.style.display = 'none';
+}
+
+function renderNotas(){
+  const labelEl = document.getElementById('notas-year-label');
+  const resumoEl = document.getElementById('notas-resumo-anual');
+  const listEl = document.getElementById('notas-list');
+  if(!labelEl || !listEl) return;
+  labelEl.textContent = notasYear;
+
+  const allClients = JSON.parse(localStorage.getItem('ge_v3') || '[]');
+
+  // Calcular totais anuais
+  let totalAnual = 0;
+  let totalEmitidas = 0;
+  let totalPendentes = 0;
+  let countEmitidas = 0;
+  let countPendentes = 0;
+
+  // Coletar todas as notas do ano
+  const meses = [];
+  for(let m = 0; m < 12; m++){
+    const ms = notasYear + '-' + String(m+1).padStart(2,'0');
+    const notasMes = [];
+    allClients.forEach(c => {
+      const total = calcTotalServicosPagesMes(c, ms);
+      if(total > 0){
+        const nf = getNFData(c.id, ms);
+        notasMes.push({ client: c, ms, total, nf });
+        totalAnual += total;
+        if(nf.status === 'emitida'){ totalEmitidas += total; countEmitidas++; }
+        else { totalPendentes += total; countPendentes++; }
+      }
+    });
+    if(notasMes.length) meses.push({ ms, m, notasMes });
+  }
+
+  // Limite de IR (simplificado — referência 2026)
+  const limiteIR = 33888; // aprox. 2x isenção mensal * 12
+  const pctAnual = Math.min(100, Math.round((totalEmitidas / limiteIR) * 100));
+
+  resumoEl.innerHTML = `
+    <div class="fc"><div class="flab">Total emitido no ano</div><div class="fval" style="color:#4a9e6b">${FMT(totalEmitidas)}</div></div>
+    <div class="fc"><div class="flab">Pendentes de emissão</div><div class="fval" style="color:#c49a3c">${FMT(totalPendentes)}</div></div>
+    <div class="fc"><div class="flab">NFs emitidas</div><div class="fval" style="color:var(--t2)">${countEmitidas}</div></div>
+    <div class="fc" style="min-width:220px;flex-direction:column;align-items:flex-start">
+      <div class="flab" style="margin-bottom:6px">Faixa de renda anual (referência IR)</div>
+      <div style="width:100%;background:var(--b);border-radius:4px;height:8px;overflow:hidden;margin-bottom:4px">
+        <div style="background:${pctAnual>80?'#b85454':pctAnual>50?'#c49a3c':'#4a9e6b'};height:100%;width:${pctAnual}%;border-radius:4px;transition:width 0.4s"></div>
+      </div>
+      <div style="font-size:10px;color:var(--m)">${FMT(totalEmitidas)} de ${FMT(limiteIR)} (${pctAnual}%)</div>
+    </div>
+  `;
+
+  if(!meses.length){
+    listEl.innerHTML = `<div class="empty">Nenhuma nota fiscal em ${notasYear}.<br>Marque como "NF Emitida" na aba Cobrança de cada cliente.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = meses.map(({ ms, m, notasMes }) => {
+    const totalMes = notasMes.reduce((s, n) => s + n.total, 0);
+    const todasEmitidas = notasMes.every(n => n.nf.status === 'emitida');
+    const algumaPendente = notasMes.some(n => n.nf.status !== 'emitida');
+    return `
+      <div style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid var(--b);margin-bottom:10px;flex-wrap:wrap;gap:8px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500">${MNAMES[m]} ${notasYear}</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:12px;color:var(--m)">Total serviços: <strong style="color:var(--al);font-family:'Cormorant Garamond',serif;font-size:16px">${FMT(totalMes)}</strong></span>
+            ${todasEmitidas
+              ? `<span style="background:rgba(74,158,107,0.15);color:#4a9e6b;border:1px solid rgba(74,158,107,0.4);border-radius:20px;padding:3px 12px;font-size:10px;font-weight:600">✓ TODAS EMITIDAS</span>`
+              : `<span style="background:rgba(196,154,60,0.12);color:#c49a3c;border:1px solid rgba(196,154,60,0.4);border-radius:20px;padding:3px 12px;font-size:10px;font-weight:600">⚠ PENDENTES</span>`
+            }
+          </div>
+        </div>
+        ${notasMes.map(({ client: cl, total, nf }) => `
+          <div class="item" style="margin-bottom:8px;border-left:3px solid ${nf.status==='emitida'?'rgba(74,158,107,0.5)':'rgba(196,154,60,0.5)'};background:${nf.status==='emitida'?'rgba(74,158,107,0.04)':'var(--s)'};flex-wrap:wrap;gap:8px">
+            <div style="width:32px;height:32px;border-radius:50%;background:${cl.color||'#2A6B7C'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${(cl.name||'').substring(0,2).toUpperCase()}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;color:var(--t)">${cl.name}</div>
+              <div style="font-size:11px;color:var(--m);margin-top:2px">
+                ${nf.status==='emitida' && nf.numero ? '<span style="color:#4a9e6b">NF Nº '+nf.numero+'</span>' : nf.status==='emitida' ? '<span style="color:#4a9e6b">Emitida (sem nº)</span>' : '<span style="color:#c49a3c">Pendente de emissão</span>'}
+              </div>
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--al)">${FMT(total)}</div>
+            <div style="background:${nf.status==='emitida'?'rgba(74,158,107,0.15)':'rgba(196,154,60,0.12)'};color:${nf.status==='emitida'?'#4a9e6b':'#c49a3c'};border:1px solid ${nf.status==='emitida'?'rgba(74,158,107,0.4)':'rgba(196,154,60,0.4)'};border-radius:4px;padding:4px 10px;font-size:10px;font-weight:600;letter-spacing:0.5px">
+              ${nf.status==='emitida'?'EMITIDA':'PENDENTE'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
 </script>
 </body>
 </html>
