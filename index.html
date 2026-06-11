@@ -293,10 +293,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
   <button class="nav-item active" id="nav-clientes" onclick="goView('clientes')">
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Meus Clientes
   </button>
-  <button class="nav-item" id="nav-notas" onclick="goView('notas')">
-    <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Notas Fiscais
-    <span id="notas-badge" style="margin-left:auto;background:#c49a3c;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
-  </button>
+
   <button class="nav-item" id="nav-entregas" onclick="goView('entregas')">
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg></span> Entregas
     <span id="entregas-badge" style="margin-left:auto;background:var(--ac);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
@@ -328,6 +325,10 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
     </button>
   </div>
 
+  <button class="nav-item" id="nav-notas" onclick="goView('notas')">
+    <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Notas Fiscais
+    <span id="notas-badge" style="margin-left:auto;background:#c49a3c;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;display:none"></span>
+  </button>
   <button class="nav-item" id="nav-anotacoes" onclick="goView('anotacoes')">
     <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Anotações
   </button>
@@ -383,9 +384,9 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
     <div class="dt">
       <button class="tb active" data-tab="perfil" onclick="swTab('perfil',this)">Perfil</button>
       <button class="tb" data-tab="calendario" onclick="swTab('calendario',this)">Calendário</button>
-      <button class="tb" data-tab="financeiro" onclick="swTab('financeiro',this)">Financeiro</button>
       <button class="tb" data-tab="conteudos" onclick="swTab('conteudos',this)">Banco de Conteúdo</button>
       <button class="tb" data-tab="transporte" onclick="swTab('transporte',this)">Transporte</button>
+      <button class="tb" data-tab="financeiro" onclick="swTab('financeiro',this)">Financeiro</button>
       <button class="tb" data-tab="cobranca" onclick="swTab('cobranca',this)">Cobrança</button>
     </div>
     <div class="dc">
@@ -1845,32 +1846,62 @@ function renderConteudos(){
   if(!el)return;
   const ideias=(c.ideias||[]);
   if(!ideias.length){
-    el.innerHTML='<div class="empty"><div style="font-size:28px;opacity:0.5;margin-bottom:10px">💡</div>Nenhuma ideia ainda.<br><br><button class="btn bp bsm" onclick="openConteudo(null)">+ Adicionar ideia</button></div>';
+    el.innerHTML='<div class="empty" style="margin-top:40px"><div style="font-size:28px;opacity:0.5;margin-bottom:10px">💡</div>Nenhuma ideia ainda.<br><br><button class="btn bp bsm" onclick="openConteudo(null)">+ Adicionar ideia</button></div>';
     return;
   }
-  el.innerHTML=ideias.map(idea=>{
-    const tagObj=idea.tagId?getTag(idea.tagId):(idea.tag?getTagByName(idea.tag):null);
-    const tagColor=tagObj?tagObj.color:'var(--ac)';
-    const tagName=tagObj?tagObj.name:'';
-    return `<div class="item" style="align-items:flex-start;border-left:3px solid ${tagColor}">
-      <div style="flex:1">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
-          <div style="font-size:13px;font-weight:600;color:var(--t)">${idea.title}</div>
-          ${tagName?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:${tagColor}22;color:${tagColor};border:1px solid ${tagColor}44">${tagName}</span>`:''}
-          ${idea.type?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:var(--s2);color:var(--t2)">${idea.type}</span>`:''}
-        </div>
-        ${idea.desc?`<div style="font-size:12px;color:var(--m);line-height:1.6;white-space:pre-wrap;margin-bottom:8px">${idea.desc}</div>`:''}
-        ${idea.ref?`<div style="font-size:11px;color:var(--m)">📎 <a href="${idea.ref}" target="_blank" style="color:var(--al)">${idea.ref.length>40?idea.ref.substring(0,40)+'...':idea.ref}</a></div>`:''}
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;margin-left:12px">
-        <button onclick="agendarConteudo('${idea.id}')" style="background:var(--adim);border:1px solid var(--ab);border-radius:6px;padding:6px 12px;color:var(--al);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;white-space:nowrap">📅 Agendar</button>
-        <button onclick="openConteudo('${idea.id}')" style="background:none;border:1px solid var(--b2);border-radius:4px;padding:4px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Editar</button>
-        <button onclick="delConteudo('${idea.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:4px;padding:4px 8px;color:#b85454;cursor:pointer;font-size:11px">×</button>
+  // Agrupar por tag
+  const byTag={};
+  const untagged=[];
+  ideias.forEach(idea=>{
+    if(idea.tagId){
+      if(!byTag[idea.tagId])byTag[idea.tagId]=[];
+      byTag[idea.tagId].push(idea);
+    } else {
+      untagged.push(idea);
+    }
+  });
+  function cardHTML(idea){
+    const tObj=idea.tagId?getTag(idea.tagId):(idea.tag?getTagByName(idea.tag):null);
+    const tColor=tObj?tObj.color:'#5a5a52';
+    return `<div style="background:var(--bg);border:1px solid rgba(255,255,255,0.09);border-radius:7px;padding:10px 12px;margin-bottom:7px" onclick="openConteudo('${idea.id}')">
+      <div style="font-size:12px;font-weight:600;color:var(--t);margin-bottom:4px;line-height:1.4;cursor:pointer">${idea.title}</div>
+      ${idea.type?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:var(--s2);color:var(--m);display:inline-block;margin-bottom:4px">${idea.type}</span>`:''}
+      ${idea.desc?`<div style="font-size:11px;color:var(--m);line-height:1.5;margin-bottom:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;white-space:pre-wrap">${idea.desc}</div>`:''}
+      ${idea.ref?`<div style="font-size:10px;color:var(--m);margin-bottom:6px">📎 <a href="${idea.ref}" target="_blank" style="color:var(--al)" onclick="event.stopPropagation()">${idea.ref.length>35?idea.ref.substring(0,35)+'...':idea.ref}</a></div>`:''}
+      <div style="display:flex;gap:5px;margin-top:6px">
+        <button onclick="event.stopPropagation();agendarConteudo('${idea.id}')" style="flex:1;background:var(--adim);border:1px solid var(--ab);border-radius:5px;padding:5px 8px;color:var(--al);cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif">📅 Agendar</button>
+        <button onclick="event.stopPropagation();openConteudo('${idea.id}')" style="background:none;border:1px solid var(--b2);border-radius:5px;padding:5px 8px;color:var(--m);cursor:pointer;font-size:10px;font-family:'DM Sans',sans-serif">Editar</button>
+        <button onclick="event.stopPropagation();delConteudo('${idea.id}')" style="background:rgba(184,84,84,0.12);border:1px solid rgba(184,84,84,0.25);border-radius:5px;padding:5px 8px;color:#b85454;cursor:pointer;font-size:12px;line-height:1">×</button>
       </div>
     </div>`;
-  }).join('');
+  }
+  function colHTML(tagColor, tagName, tagId, ideas){
+    const addTagId=tagId||'';
+    return `<div style="min-width:260px;max-width:260px;display:flex;flex-direction:column;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:${tagColor}18;border:1px solid ${tagColor}44;border-radius:8px 8px 0 0">
+        <span style="width:10px;height:10px;border-radius:50%;background:${tagColor};flex-shrink:0"></span>
+        <span style="font-size:11px;font-weight:600;color:${tagColor};text-transform:uppercase;letter-spacing:0.8px;flex:1">${tagName}</span>
+        <span style="font-size:10px;color:${tagColor};background:${tagColor}22;padding:1px 7px;border-radius:10px;font-weight:600">${ideas.length}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;padding:8px;background:var(--s2);border:1px solid ${tagColor}33;border-top:none;border-radius:0 0 8px 8px;flex:1">
+        ${ideas.map(cardHTML).join('')}
+        <button onclick="window._openConteudoTag('${addTagId}')" style="width:100%;background:none;border:1px dashed var(--b2);border-radius:6px;padding:7px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;margin-top:2px;transition:border-color 0.2s" onmouseover="this.style.borderColor='${tagColor}'" onmouseout="this.style.borderColor=''">+ ideia</button>
+      </div>
+    </div>`;
+  }
+  // Build columns for tags that have ideas
+  const activeTags=globalTags.filter(t=>byTag[t.id]&&byTag[t.id].length>0);
+  let cols=activeTags.map(t=>colHTML(t.color,t.name,t.id,byTag[t.id]||[])).join('');
+  // Untagged column
+  if(untagged.length){
+    cols+=colHTML('#5a5a52','Sem etiqueta','',untagged);
+  }
+  el.innerHTML=`<div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;align-items:flex-start">${cols}</div>`;
 }
-
+window._openConteudoTag=function(tagId){
+  openConteudo(null);
+  if(tagId){setTimeout(()=>{const s=document.getElementById('ci-tag');if(s)s.value=tagId;},80);}
+};
 function openConteudo(id){
   const c=gc();
   const idea=id?(c.ideias||[]).find(x=>x.id===id):null;
@@ -2264,7 +2295,7 @@ function renderCal(){
       const tagColor=tagObj?tagObj.color:'#2A6B7C';
       const tagName=tagObj?tagObj.name:(p.tag||p.type||'');
       // Estilo do card baseado na cor da etiqueta
-      const cardBg=tagColor+'22';
+      const cardBg='rgba(255,255,255,0.06)';
       const cardBorder=tagColor;
       const platIcons=plats.map(pl=>'<span style="display:inline-flex;align-items:center;opacity:'+(checks[pl]?1:0.35)+'">'+platSVG(pl,11)+'</span>').join(' ');
       const title=p.title||(tagName||'Post').substring(0,22);
@@ -4766,7 +4797,7 @@ function gP(){const c=window.gc?window.gc():null;if(!c)return DP;if(!c.pautaPila
 function gPid(id){return gP().find(p=>p.id===id)||null;}
 function gPnm(n){return gP().find(p=>p.name===n)||null;}
 function getPilaresForDia(dia){if(!dia)return[];if(dia.pilarIds&&dia.pilarIds.length){return dia.pilarIds.map(id=>gPid(id)).filter(Boolean);}if(dia.pilarId){const p=gPid(dia.pilarId);return p?[p]:(dia.pilarColor?[{id:'',name:dia.pilar||'',color:dia.pilarColor}]:[]);}if(dia.pilar){const p=gPnm(dia.pilar);return p?[p]:(dia.pilarColor?[{id:'',name:dia.pilar,color:dia.pilarColor}]:[]);}return[];}
-function injectBtn(){const tabs=document.querySelector('.dt');if(!tabs)return;const cb=Array.from(tabs.querySelectorAll('.tb')).find(b=>b.dataset.tab==='conteudos');if(!cb||tabs.querySelector('[data-tab="pauta-editorial"]'))return;const btn=document.createElement('button');btn.className='tb';btn.dataset.tab='pauta-editorial';btn.textContent='Pauta de Stories';btn.onclick=function(){window.swTab('pauta-editorial',btn);};cb.after(btn);}
+function injectBtn(){const tabs=document.querySelector('.dt');if(!tabs)return;const cb=Array.from(tabs.querySelectorAll('.tb')).find(b=>b.dataset.tab==='calendario');if(!cb||tabs.querySelector('[data-tab="pauta-editorial"]'))return;const btn=document.createElement('button');btn.className='tb';btn.dataset.tab='pauta-editorial';btn.textContent='Pauta de Stories';btn.onclick=function(){window.swTab('pauta-editorial',btn);};cb.after(btn);}
 function injectPanel(){if(document.getElementById('tp-pauta-editorial'))return;const dc=document.querySelector('.dc');if(!dc)return;const tp=document.getElementById('tp-transporte');const p=document.createElement('div');p.className='tp';p.id='tp-pauta-editorial';p.innerHTML=`<div id="pe-ruler" style="position:sticky;top:-32px;z-index:50;background:var(--bg);border-bottom:1px solid var(--b);padding:10px 32px;margin:-32px -32px 0 -32px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--m)">Régua de pilares</div><button onclick="window.openAddPilar(null)" style="background:none;border:1px dashed var(--b2);border-radius:5px;padding:3px 10px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">+ Pilar</button></div><div id="pe-ruler-items" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:36px;padding:7px 10px;background:var(--s2);border:1px solid var(--b);border-radius:8px"><span style="font-size:11px;color:var(--b2);font-style:italic">Carregando...</span></div></div><div style="position:sticky;top:calc(-32px + 80px);z-index:49;background:var(--bg);border-bottom:1px solid var(--b);padding:10px 32px;margin:0 -32px 16px -32px"><div class="cn2" style="margin-bottom:0"><button class="cnb" onclick="window.chPeMonth(-1)">&#8249;</button><div style="display:flex;align-items:center;gap:10px"><div class="cm2" id="pe-month-label"></div><button class="cnb" onclick="window.openPautaDia(null)" style="font-size:11px;padding:5px 12px">+ Dia</button></div><button class="cnb" onclick="window.chPeMonth(1)">&#8250;</button></div></div><div class="cgrid" id="pe-grid"></div><div style="margin-top:24px"><div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--b)">Lista do mês</div><div id="pe-list"></div></div>`;tp?dc.insertBefore(p,tp):dc.appendChild(p);}
 function patchSw(){const o=window.swTab;if(!o||o.__pp)return;window.swTab=function(t,b){o(t,b);if(t==='pauta-editorial')window.renderPautaEditorial();};window.swTab.__pp=true;}
 function renderRegua(){const el=document.getElementById('pe-ruler-items');if(!el)return;const pl=gP();if(!pl.length){el.innerHTML='<span style="font-size:11px;color:var(--b2);font-style:italic">Adicione pilares...</span>';return;}el.innerHTML=pl.map(p=>`<span onclick="window.openAddPilar('${p.id}')" style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:${p.color}22;border:1px solid ${p.color};color:${p.color}" onmouseover="this.style.background='${p.color}44'" onmouseout="this.style.background='${p.color}22'"><span style="width:8px;height:8px;border-radius:50%;background:${p.color}"></span>${eH(p.name)}</span>`).join('');}
@@ -4776,7 +4807,7 @@ window.delPilar=function(id){if(window.uc)window.uc(c=>{if(c.pautaPilares)c.paut
 window.chPeMonth=function(d){peM+=d;if(peM>11){peM=0;peY++;}if(peM<0){peM=11;peY--;}window.renderPautaEditorial();};
 window.renderPautaEditorial=function(){const c=window.gc?window.gc():null;if(!c)return;const MN=window.MNAMES||['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];const lbl=document.getElementById('pe-month-label');if(lbl)lbl.textContent=MN[peM]+' '+peY;renderRegua();const pe=c.pautaEditorial||{};const fd=new Date(peY,peM,1).getDay(),dim=new Date(peY,peM+1,0).getDate(),dp=new Date(peY,peM,0).getDate();const td=new Date();td.setHours(0,0,0,0);let h=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].map(d=>`<div class="cdow">${d}</div>`).join('');for(let i=fd-1;i>=0;i--)h+=`<div class="cday om"><div class="cdn">${dp-i}</div></div>`;for(let d=1;d<=dim;d++){const ds=peY+'-'+String(peM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');const isT=new Date(ds+'T12:00:00').getTime()===td.getTime();const dia=pe[ds];let card='';if(dia){const pls=getPilaresForDia(dia);const tags=pls.map(p=>`<span style="font-size:9px;font-weight:700;color:${p.color};white-space:nowrap">${eH(p.name)}</span>`).join(`<span style="color:#666;margin:0 2px;font-size:8px">·</span>`);card=`<div onclick="event.stopPropagation();window.openPautaDia('${ds}')" style="border-radius:5px;padding:5px 7px;font-size:10px;margin-bottom:4px;cursor:pointer;line-height:1.4;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);box-shadow:0 1px 4px rgba(0,0,0,0.4)" onmouseover="this.style.background='rgba(255,255,255,0.11)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'"><div style="display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin-bottom:2px">${dia.executado?'<span style="color:#4a9e6b;font-size:9px;margin-right:2px">✓</span>':''}${tags||'<span style="color:#666;font-size:9px">sem pilar</span>'}</div><div style="font-size:9px;color:#aaa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${eH(dia.tema||'')}</div></div>`;}h+=`<div class="cday${isT?' td2':''}" onclick="window.openPautaDia('${ds}')"><div class="cdn">${d}</div>${card}<span class="cah">+</span></div>`;}const tc=Math.ceil((fd+dim)/7)*7;for(let i=1;i<=tc-(fd+dim);i++)h+=`<div class="cday om"><div class="cdn">${i}</div></div>`;const gr=document.getElementById('pe-grid');if(gr)gr.innerHTML=h;rList();};
 function rList(){const c=window.gc?window.gc():null;if(!c)return;const el=document.getElementById('pe-list');if(!el)return;const pe=c.pautaEditorial||{};const ms=peY+'-'+String(peM+1).padStart(2,'0');const MN=window.MNAMES||['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];const dias=Object.keys(pe).filter(d=>d.startsWith(ms)).sort();if(!dias.length){el.innerHTML=`<div class="empty"><div style="font-size:22px;opacity:0.5;margin-bottom:10px">📱</div>Nenhuma pauta em ${MN[peM]} ${peY}</div>`;return;}el.innerHTML=dias.map(ds=>{const dia=pe[ds];const pls=getPilaresForDia(dia);const tags=pls.map(p=>`<span style="font-size:12px;font-weight:700;color:${p.color}">${eH(p.name)}</span>`).join('<span style="color:#666;margin:0 4px">·</span>');const dl=new Date(ds+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});return`<div class="pi2" onclick="window.openPautaDia('${ds}')" style="flex-direction:column;align-items:stretch;gap:0"><div style="display:flex;align-items:center;gap:12px"><div style="width:4px;min-height:44px;border-radius:2px;background:rgba(255,255,255,0.15);flex-shrink:0"></div><div style="flex:1"><div style="font-size:11px;color:var(--m);margin-bottom:3px">${dl}</div><div style="display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-bottom:2px">${tags||'<span style="font-size:12px;color:var(--m)">sem pilar</span>'}</div><div style="font-size:12px;color:var(--t2)">${eH(dia.tema||'')}</div>${dia.sequencia?`<div style="font-size:11px;color:var(--m);font-style:italic;margin-top:4px;white-space:pre-line;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${eH(dia.sequencia)}</div>`:''}</div><span class="bdg" style="background:${dia.executado?'rgba(74,158,107,0.15)':'rgba(90,90,82,0.15)'};color:${dia.executado?'#4a9e6b':'#5a5a52'}">${dia.executado?'Executado':'Pendente'}</span></div></div>`;}).join('');}
-window.openPautaDia=function(dS){const c=window.gc?window.gc():null;if(!c)return;const pe=c.pautaEditorial||{};const dia=dS?pe[dS]:null;const pl=gP();let sIds=dia?(dia.pilarIds&&dia.pilarIds.length?[...dia.pilarIds]:(dia.pilarId?[dia.pilarId]:[])):[]; function bm(){const chips=pl.map(p=>{const s=sIds.includes(p.id);return`<span onclick="window._pSel('${p.id}')" id="pec-${p.id}" title="Clique para selecionar/desmarcar" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${s?p.color:p.color+'22'};border:2px solid ${p.color};color:${s?'#fff':p.color}"><span style="width:8px;height:8px;border-radius:50%;background:${s?'#fff':p.color};display:${s?'none':'inline-block'}"></span>${eH(p.name)}</span>`;}).join('');if(window.showMo)window.showMo(dia?'Editar pauta':'Nova pauta de stories',`<div class="fg2"><label>Data *</label><input type="date" id="pe-data" value="${eH(dS||'')}"></div><div class="fg2"><label>Pilar <span style="font-size:10px;color:var(--m);font-weight:400;text-transform:none;letter-spacing:0">(pode selecionar mais de um)</span></label><div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:var(--bg);border:1px solid var(--b);border-radius:6px;min-height:44px">${chips||'<span style="font-size:12px;color:var(--m)">Crie pilares na régua primeiro</span>'}</div><input type="hidden" id="pe-pilar-sel" value="${sIds.join(',')}"></div><div class="fg2"><label>Objetivo</label><textarea id="pe-objetivo" rows="2" placeholder="O que esse story precisa gerar?">${eH(dia?dia.objetivo||'':'')}</textarea></div><div class="fg2"><label>Tema</label><input type="text" id="pe-tema" value="${eH(dia?dia.tema||'':'')}" placeholder="Assunto principal do story"></div><div class="fg2"><label>Sequência de stories</label><textarea id="pe-sequencia" rows="6" placeholder="Story 1: ...&#10;Story 2: ...&#10;Story 3: ...">${eH(dia?dia.sequencia||'':'')}</textarea></div><div class="fg2"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;font-weight:400"><input type="checkbox" id="pe-exec" ${dia&&dia.executado?'checked':''} style="width:17px;height:17px;accent-color:#4a9e6b;cursor:pointer"><span>Marcar como executado</span></label></div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn bp" style="flex:1" onclick="window.savePautaDia('${eH(dS||'')}')">Salvar</button>${dia?`<button class="btn bd" onclick="window.delPautaDia('${eH(dS)}');window.closeMo()">Excluir</button>`:''}</div>`);}
+window.openPautaDia=function(dS){const c=window.gc?window.gc():null;if(!c)return;const pe=c.pautaEditorial||{};const dia=dS?pe[dS]:null;const pl=gP();let sIds=dia?(dia.pilarIds&&dia.pilarIds.length?[...dia.pilarIds]:(dia.pilarId?[dia.pilarId]:[])):[]; function bm(){const chips=pl.map(p=>{const s=sIds.includes(p.id);return`<span onclick="window._pSel('${p.id}')" id="pec-${p.id}" style="display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;background:${s?p.color:p.color+'22'};border:2px solid ${p.color};color:${s?'#fff':p.color}"><span style="width:8px;height:8px;border-radius:50%;background:${s?'#fff':p.color};display:${s?'none':'inline-block'}"></span>${eH(p.name)}</span>`;}).join('');if(window.showMo)window.showMo(dia?'Editar pauta':'Nova pauta de stories',`<div class="fg2"><label>Data *</label><input type="date" id="pe-data" value="${eH(dS||'')}"></div><div class="fg2"><label>Pilar <span style="font-size:10px;color:var(--m);font-weight:400;text-transform:none;letter-spacing:0">(pode selecionar mais de um)</span></label><div style="display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:var(--bg);border:1px solid var(--b);border-radius:6px;min-height:44px">${chips||'<span style="font-size:12px;color:var(--m)">Crie pilares na régua primeiro</span>'}</div><input type="hidden" id="pe-pilar-sel" value="${sIds.join(',')}"></div><div class="fg2"><label>Objetivo</label><textarea id="pe-objetivo" rows="2" placeholder="O que esse story precisa gerar?">${eH(dia?dia.objetivo||'':'')}</textarea></div><div class="fg2"><label>Tema</label><input type="text" id="pe-tema" value="${eH(dia?dia.tema||'':'')}" placeholder="Assunto principal do story"></div><div class="fg2"><label>Sequência de stories</label><textarea id="pe-sequencia" rows="6" placeholder="Story 1: ...&#10;Story 2: ...&#10;Story 3: ...">${eH(dia?dia.sequencia||'':'')}</textarea></div><div class="fg2"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;text-transform:none;letter-spacing:0;font-size:13px;font-weight:400"><input type="checkbox" id="pe-exec" ${dia&&dia.executado?'checked':''} style="width:17px;height:17px;accent-color:#4a9e6b;cursor:pointer"><span>Marcar como executado</span></label></div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn bp" style="flex:1" onclick="window.savePautaDia('${eH(dS||'')}')">Salvar</button>${dia?`<button class="btn bd" onclick="window.delPautaDia('${eH(dS)}');window.closeMo()">Excluir</button>`:''}</div>`);}
 window._pSel=function(id){const i=sIds.indexOf(id);if(i>=0)sIds.splice(i,1);else sIds.push(id);const hi=document.getElementById('pe-pilar-sel');if(hi)hi.value=sIds.join(',');pl.forEach(p=>{const ch=document.getElementById('pec-'+p.id);if(!ch)return;const s=sIds.includes(p.id);ch.style.background=s?p.color:p.color+'22';ch.style.color=s?'#fff':p.color;const dt=ch.querySelector('span');if(dt)dt.style.display=s?'none':'inline-block';});};bm();};
 window.savePautaDia=function(oD){const nD=(document.getElementById('pe-data')||{}).value;if(!nD){if(window.toast)window.toast('Selecione a data','err');return;}const pidStr=(document.getElementById('pe-pilar-sel')||{value:''}).value||'';const pids=pidStr?pidStr.split(',').filter(Boolean):[];const pObjs=pids.map(id=>gPid(id)).filter(Boolean);const dia={pilarIds:pids,pilares:pObjs.map(p=>({id:p.id,name:p.name,color:p.color})),objetivo:(document.getElementById('pe-objetivo')||{value:''}).value.trim(),tema:(document.getElementById('pe-tema')||{value:''}).value.trim(),sequencia:(document.getElementById('pe-sequencia')||{value:''}).value.trim(),executado:(document.getElementById('pe-exec')||{checked:false}).checked};if(window.uc)window.uc(c=>{if(!c.pautaEditorial)c.pautaEditorial={};if(oD&&oD!==nD)delete c.pautaEditorial[oD];c.pautaEditorial[nD]=dia;});if(window.closeMo)window.closeMo();if(window.toast)window.toast('Pauta salva!');window.renderPautaEditorial();};
 window.delPautaDia=function(dS){if(window.uc)window.uc(c=>{if(c.pautaEditorial)delete c.pautaEditorial[dS];});if(window.toast)window.toast('Pauta removida');window.renderPautaEditorial();};
