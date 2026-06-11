@@ -943,6 +943,26 @@ function saveTags(){
 }
 function getTag(id){return globalTags.find(t=>t.id===id)||null;}
 function getTagByName(name){return globalTags.find(t=>t.name===name)||null;}
+window._showNewTagForm=function(){
+  const f=document.getElementById('ci-new-tag-form');
+  if(f)f.style.display=f.style.display==='none'?'block':'none';
+};
+window._saveNewTagInline=function(){
+  const nm=(document.getElementById('ci-nt-name')||{}).value||'';
+  const co=(document.getElementById('ci-nt-color')||{value:'#2A6B7C'}).value||'#2A6B7C';
+  if(!nm.trim()){if(window.toast)window.toast('Digite o nome','err');return;}
+  if(globalTags.find(t=>t.name===nm.trim())){if(window.toast)window.toast('Etiqueta já existe','err');return;}
+  const newTag={id:'t'+Date.now(),name:nm.trim(),color:co};
+  globalTags.push(newTag);
+  localStorage.setItem('ge_tags',JSON.stringify(globalTags));
+  if(window.sbUpsert)window.sbUpsert('ge_tags',globalTags);
+  // add to select and pick it
+  const sel=document.getElementById('ci-tag');
+  if(sel){const opt=document.createElement('option');opt.value=newTag.id;opt.textContent=newTag.name;opt.selected=true;sel.appendChild(opt);}
+  const f=document.getElementById('ci-new-tag-form');if(f)f.style.display='none';
+  const ni=document.getElementById('ci-nt-name');if(ni)ni.value='';
+  if(window.toast)window.toast('Etiqueta criada!');
+};
 
 // Status globais de postagem
 let globalPostStatus=JSON.parse(localStorage.getItem('ge_post_status')||'[]');
@@ -1849,7 +1869,6 @@ function renderConteudos(){
     el.innerHTML='<div class="empty" style="margin-top:40px"><div style="font-size:28px;opacity:0.5;margin-bottom:10px">💡</div>Nenhuma ideia ainda.<br><br><button class="btn bp bsm" onclick="openConteudo(null)">+ Adicionar ideia</button></div>';
     return;
   }
-  // Agrupar por tag
   const byTag={};
   const untagged=[];
   ideias.forEach(idea=>{
@@ -1862,7 +1881,6 @@ function renderConteudos(){
   });
   function cardHTML(idea){
     const tObj=idea.tagId?getTag(idea.tagId):(idea.tag?getTagByName(idea.tag):null);
-    const tColor=tObj?tObj.color:'#5a5a52';
     return `<div style="background:var(--bg);border:1px solid rgba(255,255,255,0.09);border-radius:7px;padding:10px 12px;margin-bottom:7px" onclick="openConteudo('${idea.id}')">
       <div style="font-size:12px;font-weight:600;color:var(--t);margin-bottom:4px;line-height:1.4;cursor:pointer">${idea.title}</div>
       ${idea.type?`<span style="font-size:10px;padding:2px 8px;border-radius:3px;background:var(--s2);color:var(--m);display:inline-block;margin-bottom:4px">${idea.type}</span>`:''}
@@ -1889,10 +1907,8 @@ function renderConteudos(){
       </div>
     </div>`;
   }
-  // Build columns for tags that have ideas
   const activeTags=globalTags.filter(t=>byTag[t.id]&&byTag[t.id].length>0);
   let cols=activeTags.map(t=>colHTML(t.color,t.name,t.id,byTag[t.id]||[])).join('');
-  // Untagged column
   if(untagged.length){
     cols+=colHTML('#5a5a52','Sem etiqueta','',untagged);
   }
@@ -1911,8 +1927,13 @@ function openConteudo(id){
       <input type="text" id="ci-title" value="${idea?idea.title:''}" placeholder="Ex: Vídeo sobre rinoplastia, Dica pós-operatório...">
     </div>
     <div class="fg">
-      <div class="fg2"><label>Etiqueta</label>
+      <div class="fg2"><label style="display:flex;align-items:center;justify-content:space-between">Etiqueta<button type="button" onclick="window._showNewTagForm()" style="background:none;border:none;color:var(--al);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;padding:0;text-transform:none;letter-spacing:0;font-weight:600">+ Nova etiqueta</button></label>
         <select id="ci-tag">${tagOpts}</select>
+        <div id="ci-new-tag-form" style="display:none;margin-top:8px;background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:10px">
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--m);margin-bottom:8px">Nova etiqueta</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="color" id="ci-nt-color" value="#2A6B7C" style="width:44px;height:36px;padding:2px;border-radius:6px;border:1px solid var(--b);cursor:pointer;background:var(--s)"><input type="text" id="ci-nt-name" placeholder="Nome da etiqueta..." style="flex:1"></div>
+          <div style="display:flex;gap:6px"><button class="btn bp bsm" style="flex:1" onclick="window._saveNewTagInline()">Criar etiqueta</button><button class="btn bsm" onclick="document.getElementById('ci-new-tag-form').style.display='none'">Cancelar</button></div>
+        </div>
       </div>
       <div class="fg2"><label>Tipo</label>
         <select id="ci-type">
