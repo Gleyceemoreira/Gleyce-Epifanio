@@ -956,7 +956,6 @@ window._saveNewTagInline=function(){
   globalTags.push(newTag);
   localStorage.setItem('ge_tags',JSON.stringify(globalTags));
   if(window.sbUpsert)window.sbUpsert('ge_tags',globalTags);
-  // add to select and pick it
   const sel=document.getElementById('ci-tag');
   if(sel){const opt=document.createElement('option');opt.value=newTag.id;opt.textContent=newTag.name;opt.selected=true;sel.appendChild(opt);}
   const f=document.getElementById('ci-new-tag-form');if(f)f.style.display='none';
@@ -1784,11 +1783,11 @@ function buildTrechoHTML(tr,i){
       ${i>0?`<button onclick="removeTrecho(${i})" style="background:none;border:none;color:#b85454;cursor:pointer;font-size:18px;padding:0;line-height:1">×</button>`:''}
     </div>
     <div class="fg">
-      <div class="fg2"><label>Direção</label><select class="tr-dir">${dirOpts}</select></div>
+      <div class="fg2"><label>Direção</label><select class="tr-dir" onchange="window._autoFillTranspVal(this.closest('.trecho-item'))">${dirOpts}</select></div>
       <div class="fg2"><label>Destino</label><select class="tr-dest">${destOpts}</select></div>
     </div>
     <div class="fg">
-      <div class="fg2"><label>Tipo</label><select class="tr-tipo">${tipoOpts}</select></div>
+      <div class="fg2"><label>Tipo</label><select class="tr-tipo" onchange="window._autoFillTranspVal(this.closest('.trecho-item'))">${tipoOpts}</select></div>
       <div class="fg2"><label>Valor (R$)</label><input type="number" class="tr-val" value="${tr.value||''}" step="0.01" placeholder="0,00"></div>
     </div>
     <div class="fg2"><label>Observação</label><input type="text" class="tr-obs" value="${tr.obs||''}" placeholder="Alguma observação..."></div>
@@ -1815,6 +1814,20 @@ function removeTrecho(i){
     if(btn) btn.setAttribute('onclick','removeTrecho('+idx+')');
   });
 }
+
+// Auto-preenchimento de valor para Transporte público
+window._autoFillTranspVal=function(item){
+  if(!item)return;
+  const tipo=item.querySelector('.tr-tipo');
+  const dir=item.querySelector('.tr-dir');
+  const val=item.querySelector('.tr-val');
+  if(!tipo||!dir||!val)return;
+  if(tipo.value==='Transporte público'){
+    const d=dir.value;
+    if(d==='Ida'||d==='Volta') val.value='9.38';
+    else if(d==='Ida e volta') val.value='18.76';
+  }
+};
 
 function saveTransp(id){
   const date=document.getElementById('tr-date').value;
