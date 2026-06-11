@@ -1883,7 +1883,7 @@ function renderConteudos(){
         <span style="font-size:11px;font-weight:600;color:${tagColor};text-transform:uppercase;letter-spacing:0.8px;flex:1">${tagName}</span>
         <span style="font-size:10px;color:${tagColor};background:${tagColor}22;padding:1px 7px;border-radius:10px;font-weight:600">${ideas.length}</span>
       </div>
-      <div style="display:flex;flex-direction:column;padding:8px;background:var(--s2);border:1px solid ${tagColor}33;border-top:none;border-radius:0 0 8px 8px;flex:1">
+      <div style="display:flex;flex-direction:column;padding:8px;background:var(--s2);border:1px solid ${tagColor}33;border-top:none;border-radius:0 0 8px 8px;flex:1;overflow-y:auto">
         ${ideas.map(cardHTML).join('')}
         <button onclick="window._openConteudoTag('${addTagId}')" style="width:100%;background:none;border:1px dashed var(--b2);border-radius:6px;padding:7px;color:var(--m);cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;margin-top:2px;transition:border-color 0.2s" onmouseover="this.style.borderColor='${tagColor}'" onmouseout="this.style.borderColor=''">+ ideia</button>
       </div>
@@ -1896,7 +1896,7 @@ function renderConteudos(){
   if(untagged.length){
     cols+=colHTML('#5a5a52','Sem etiqueta','',untagged);
   }
-  el.innerHTML=`<div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;align-items:flex-start">${cols}</div>`;
+  el.innerHTML=`<div style="display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;align-items:flex-start;height:calc(100vh - 290px)">${cols}</div>`;
 }
 window._openConteudoTag=function(tagId){
   openConteudo(null);
