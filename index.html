@@ -1877,7 +1877,7 @@ function renderConteudos(){
   }
   function colHTML(tagColor, tagName, tagId, ideas){
     const addTagId=tagId||'';
-    return `<div style="min-width:260px;max-width:260px;display:flex;flex-direction:column;flex-shrink:0">
+    return `<div style="min-width:260px;max-width:260px;display:flex;flex-direction:column;flex-shrink:0;height:100%">
       <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:${tagColor}18;border:1px solid ${tagColor}44;border-radius:8px 8px 0 0">
         <span style="width:10px;height:10px;border-radius:50%;background:${tagColor};flex-shrink:0"></span>
         <span style="font-size:11px;font-weight:600;color:${tagColor};text-transform:uppercase;letter-spacing:0.8px;flex:1">${tagName}</span>
@@ -1896,7 +1896,7 @@ function renderConteudos(){
   if(untagged.length){
     cols+=colHTML('#5a5a52','Sem etiqueta','',untagged);
   }
-  el.innerHTML=`<div style="display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;align-items:flex-start;height:calc(100vh - 290px)">${cols}</div>`;
+  el.innerHTML=`<div style="display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;align-items:stretch;height:calc(100vh - 290px)">${cols}</div>`;
 }
 window._openConteudoTag=function(tagId){
   openConteudo(null);
