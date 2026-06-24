@@ -1717,7 +1717,8 @@ function renderTransporte(){
   const total=trips.reduce((s,t)=>s+t.value,0);
   const recebido=trips.filter(t=>(t.reembolsoStatus||'A receber')==='Recebido').reduce((s,t)=>s+t.value,0);
   const byTipo={};trips.forEach(t=>{if(!byTipo[t.tipo])byTipo[t.tipo]=0;byTipo[t.tipo]+=t.value;});
-  sumEl.innerHTML=`<div class="fc"><div class="flab">Total do mês</div><div class="fval" style="color:var(--al)">${FMT(total)}</div></div><div class="fc"><div class="flab">Reembolso recebido</div><div class="fval" style="color:#4a9e6b">${FMT(recebido)}</div></div><div class="fc"><div class="flab">A receber</div><div class="fval" style="color:#c49a3c">${FMT(total-recebido)}</div></div>${Object.entries(byTipo).map(([k,v])=>`<div class="fc"><div class="flab">${TRANSP_TIPOS[k]?.icon||'🚗'} ${k}</div><div class="fval" style="color:${TRANSP_TIPOS[k]?.color||'var(--t2)'};">${FMT(v)}</div></div>`).join('')}`;
+  const _tp=parseFloat(c.transpAcrescimo)||0;const _ta=_tp>0?Math.round(recebido*_tp)/100:0;
+  sumEl.innerHTML=`<div class="fc"><div class="flab">Total do mês</div><div class="fval" style="color:var(--al)">${FMT(total)}</div></div><div class="fc"><div class="flab">Reembolso recebido</div><div class="fval" style="color:#4a9e6b">${FMT(recebido)}</div></div><div class="fc"><div class="flab">A receber</div><div class="fval" style="color:#c49a3c">${FMT(total-recebido)}</div></div>${Object.entries(byTipo).map(([k,v])=>`<div class="fc"><div class="flab">${TRANSP_TIPOS[k]?.icon||'\U0001f697'} ${k}</div><div class="fval" style="color:${TRANSP_TIPOS[k]?.color||'var(--t2)'}">${FMT(v)}</div></div>`).join('')}${_tp>0?`<div class="fc" style="background:rgba(196,154,60,0.08);border-left:2px solid #c49a3c"><div class="flab">Taxa acréscimo ${_tp}%</div><div class="fval" style="color:#c49a3c">+ ${FMT(_ta)}</div></div><div class="fc" style="background:rgba(42,107,124,0.08);border-left:2px solid var(--ac)"><div class="flab">Total a faturar</div><div class="fval" style="color:var(--al)">${FMT(recebido+_ta)}</div></div>`:''}` ;
   checkTranspFixBanner();
   if(!trips.length){listEl.innerHTML='<div class="empty">Nenhum transporte registrado em '+MNAMES[transpMonth]+' '+transpYear+'.<br><br><button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button></div>';return;}
   const byDay={};trips.forEach(t=>{if(!byDay[t.date])byDay[t.date]=[];byDay[t.date].push(t);});
@@ -2234,7 +2235,7 @@ function openClient(id){
   document.getElementById('fe').value=c.email||'';
   document.getElementById('fst').value=c.status||'Ativo';
   document.getElementById('fcol').value=c.color||'#2A6B7C';
-  document.getElementById('fta').value=c.transpAcrescimo||0;
+  if(document.getElementById('fta')) document.getElementById('fta').value=c.transpAcrescimo||0;
   document.getElementById('fno').value=c.notes||'';
   document.getElementById('apisetup').style.display=apiKey?'none':'block';
   document.getElementById('airr').style.display='none';
@@ -3287,14 +3288,15 @@ function renderInvoice(){
     '</div></div>';
   // Transporte do mês
   const transportes=(c.transportes||[]).filter(t=>t.date&&t.date.startsWith(mS));
-  const transpBreak=calcTranspBreakdownMes(c,mS);
   const totalTransp=transportes.reduce((s,t)=>s+t.value,0);
+  var transpBreak={base:0,pct:0,acrescimo:0,total:0};
+  try{ transpBreak=calcTranspBreakdownMes(c,mS); }catch(e){ transpBreak={base:totalTransp,pct:0,acrescimo:0,total:totalTransp}; }
   if(transportes.length){
-    const acrescimoLine = transpBreak.pct > 0
-      ? '<div style="text-align:right;margin-top:6px;font-size:12px;color:#777">Subtotal transporte: <strong>'+FMT(totalTransp)+'</strong></div>'+
-        '<div style="text-align:right;font-size:12px;color:#777">Acréscimo de '+transpBreak.pct+'%: <strong style="color:#333">+ '+FMT(transpBreak.acrescimo)+'</strong></div>'+
-        '<div style="text-align:right;margin-top:4px;font-size:13px;color:#555">Total transporte com acréscimo: <strong style="font-size:16px;color:#111">'+FMT(transpBreak.total)+'</strong></div>'
-      : '<div style="text-align:right;margin-top:8px;font-size:13px;color:#555">Total transporte: <strong style="font-size:16px;color:#111">'+FMT(totalTransp)+'</strong></div>';
+    const acrescimoRows = transpBreak.pct > 0
+      ? '<tr style="background:#fafafa"><td colspan="3" style="color:#777;font-style:italic">Subtotal transporte</td><td style="text-align:right"><strong>'+FMT(totalTransp)+'</strong></td></tr>'+
+        '<tr style="background:#fffbf0"><td colspan="3" style="color:#996600">Taxa de acréscimo '+transpBreak.pct+'%</td><td style="text-align:right;color:#996600"><strong>+ '+FMT(transpBreak.acrescimo)+'</strong></td></tr>'+
+        '<tr style="background:#f5f5f5"><td colspan="3" style="font-weight:700">Total transporte c/ acréscimo</td><td style="text-align:right"><strong>'+FMT(transpBreak.total)+'</strong></td></tr>'
+      : '';
     html+='<div style="margin-top:20px;border-top:1px solid #eee;padding-top:20px">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Reembolso de Transporte</div>'+
       '<table class="invtbl"><thead><tr><th>Data</th><th>Destino</th><th>Tipo</th><th style="text-align:right">Valor</th></tr></thead><tbody>'+
@@ -3305,12 +3307,12 @@ function renderInvoice(){
           <td style="color:#555">${t.tipo}</td>
           <td style="text-align:right"><strong>${FMT(t.value)}</strong></td>
         </tr>`).join('')+
+      acrescimoRows+
       '</tbody></table>'+
-      acrescimoLine+
+      (transpBreak.pct===0?'<div style="text-align:right;margin-top:8px;font-size:13px;color:#555">Total transporte: <strong style="font-size:16px;color:#111">'+FMT(totalTransp)+'</strong></div>':'')+
       '<div class="invtot" style="margin-top:12px"><div class="invtotl">Total Geral</div><div class="invtotv">'+FMT(total+transpBreak.total)+'</div></div>'+
     '</div>';
-  }
-  html+='</div>';
+  }  html+='</div>';
   document.getElementById('inv-preview').innerHTML=html;
 }
 async function downloadPDF(){
@@ -4506,15 +4508,13 @@ function calcTotalServicosPagesMes(c, ms){
     .reduce((s, p) => s + p.value, 0);
 }
 
-// Breakdown de transporte: base + acréscimo configurável por cliente (a partir de mai/2026)
+// Breakdown de transporte (mai/2026 em diante): base recebida + acréscimo % do perfil
 function calcTranspBreakdownMes(c, ms){
   if(ms < '2026-05') return { base: 0, pct: 0, acrescimo: 0, total: 0 };
-  const base = (c.transportes || [])
-    .filter(t => t.reembolsoStatus === 'Recebido' && (t.date || '').startsWith(ms))
-    .reduce((s, t) => s + t.value, 0);
-  const pct = parseFloat(c.transpAcrescimo) || 0;
-  const acrescimo = Math.round(base * pct) / 100;
-  return { base, pct, acrescimo, total: base + acrescimo };
+  var base = (c.transportes || []).filter(function(t){ return t.reembolsoStatus === 'Recebido' && (t.date || '').startsWith(ms); }).reduce(function(s,t){ return s+t.value; }, 0);
+  var pct = parseFloat(c.transpAcrescimo) || 0;
+  var acrescimo = Math.round(base * pct) / 100;
+  return { base: base, pct: pct, acrescimo: acrescimo, total: base + acrescimo };
 }
 function calcTotalTranspRecebidoMes(c, ms){
   return calcTranspBreakdownMes(c, ms).total;
@@ -4529,16 +4529,17 @@ function renderNFPainel(c, ms, mo, yr){
   const numInput = document.getElementById('nf-numero-input');
   if(!painel || !valorEl || !statusEl) return;
 
-  const total = calcTotalServicosPagesMes(c, ms);
-  const transp = calcTranspBreakdownMes(c, ms);
-  const totalNF = total + transp.total;
+  var total=0, transp={base:0,pct:0,acrescimo:0,total:0}, totalNF=0;
+  try{ total=calcTotalServicosPagesMes(c,ms); transp=calcTranspBreakdownMes(c,ms); totalNF=total+transp.total; }catch(e){ totalNF=total; }
   valorEl.textContent = totalNF > 0 ? FMT(totalNF) : 'R$ 0,00 (sem pagamentos pagos)';
-  const obsEl = document.getElementById('nf-obs');
+  var obsEl=document.getElementById('nf-obs');
   if(obsEl){
-    if(transp.base > 0 && transp.pct > 0){
-      obsEl.innerHTML = 'Serv.: <strong>'+FMT(total)+'</strong> + Transp. '+FMT(transp.base)+' + '+transp.pct+'% = <strong style="color:var(--al)">'+FMT(transp.total)+'</strong> → Total: <strong>'+FMT(totalNF)+'</strong>';
+    if(transp.base>0 && transp.pct>0){
+      obsEl.innerHTML='Serv.: <strong>'+FMT(total)+'</strong>&nbsp;+&nbsp;Transp.: '+FMT(transp.base)+' + '+transp.pct+'% ('+FMT(transp.acrescimo)+') = <strong style="color:var(--al)">'+FMT(transp.total)+'</strong>';
+    } else if(transp.base>0){
+      obsEl.textContent='Serv.: '+FMT(total)+' + Transp.: '+FMT(transp.base);
     } else {
-      obsEl.textContent = 'Serviços pagos + transportes recebidos (mai/2026 em diante)';
+      obsEl.textContent='Serviços pagos + transportes recebidos (mai/2026 em diante)';
     }
   }
 
@@ -4651,8 +4652,8 @@ function renderNotas(){
     const notasMes = [];
     allClients.forEach(c => {
       const total = calcTotalServicosPagesMes(c, ms);
-      const transpBreak = calcTranspBreakdownMes(c, ms);
-      const totalNF = total + transpBreak.total;
+      var transpT=0; try{ transpT=calcTranspBreakdownMes(c,ms).total; }catch(e){}
+      const totalNF = total + transpT;
       if(totalNF > 0){
         const nf = getNFData(c.id, ms);
         notasMes.push({ client: c, ms, total: totalNF, nf });
