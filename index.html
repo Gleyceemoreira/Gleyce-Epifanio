@@ -549,7 +549,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
             <div>
               <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--m);margin-bottom:4px">Nota Fiscal do mês</div>
               <div id="nf-valor-servicos" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--al)">—</div>
-              <div id="nf-obs" style="font-size:11px;color:var(--m);margin-top:2px">Somente serviços pagos (sem transporte)</div>
+              <div id="nf-obs" style="font-size:11px;color:var(--m);margin-top:2px">Serviços pagos + transportes recebidos (jun/2026 em diante)</div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
               <div id="nf-status-badge" style="font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;cursor:pointer" onclick="toggleNFStatus()">—</div>
@@ -4498,6 +4498,14 @@ function calcTotalServicosPagesMes(c, ms){
     .reduce((s, p) => s + p.value, 0);
 }
 
+// Soma transportes com reembolsoStatus='Recebido' a partir de junho/2026
+function calcTotalTranspRecebidoMes(c, ms){
+  if(ms < '2026-06') return 0;
+  return (c.transportes || [])
+    .filter(t => t.reembolsoStatus === 'Recebido' && (t.date || '').startsWith(ms))
+    .reduce((s, t) => s + t.value, 0);
+}
+
 function renderNFPainel(c, ms, mo, yr){
   const painel = document.getElementById('nf-painel');
   const valorEl = document.getElementById('nf-valor-servicos');
@@ -4508,7 +4516,9 @@ function renderNFPainel(c, ms, mo, yr){
   if(!painel || !valorEl || !statusEl) return;
 
   const total = calcTotalServicosPagesMes(c, ms);
-  valorEl.textContent = total > 0 ? FMT(total) : 'R$ 0,00 (sem pagamentos pagos)';
+  const totalTransp = calcTotalTranspRecebidoMes(c, ms);
+  const totalNF = total + totalTransp;
+  valorEl.textContent = totalNF > 0 ? FMT(totalNF) : 'R$ 0,00 (sem pagamentos pagos)';
 
   const nf = getNFData(c.id, ms);
 
@@ -4532,7 +4542,7 @@ function renderNFPainel(c, ms, mo, yr){
   // Salvar contexto para toggleNFStatus e saveNFNumero
   painel.dataset.clientId = c.id;
   painel.dataset.ms = ms;
-  painel.dataset.total = total;
+  painel.dataset.total = totalNF;
   painel.dataset.moLabel = MNAMES[mo] + ' ' + yr;
 }
 
@@ -4619,12 +4629,14 @@ function renderNotas(){
     const notasMes = [];
     allClients.forEach(c => {
       const total = calcTotalServicosPagesMes(c, ms);
-      if(total > 0){
+      const totalTransp = calcTotalTranspRecebidoMes(c, ms);
+      const totalNF = total + totalTransp;
+      if(totalNF > 0){
         const nf = getNFData(c.id, ms);
-        notasMes.push({ client: c, ms, total, nf });
-        totalAnual += total;
-        if(nf.status === 'emitida'){ totalEmitidas += total; countEmitidas++; }
-        else { totalPendentes += total; countPendentes++; }
+        notasMes.push({ client: c, ms, total: totalNF, nf });
+        totalAnual += totalNF;
+        if(nf.status === 'emitida'){ totalEmitidas += totalNF; countEmitidas++; }
+        else { totalPendentes += totalNF; countPendentes++; }
       }
     });
     if(notasMes.length) meses.push({ ms, m, notasMes });
