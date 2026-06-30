@@ -3117,6 +3117,7 @@ async function loadPayEvents(){
   }
   // Lista global de importados (não por cliente)
   const importados=JSON.parse(localStorage.getItem('ge_gcal_imported')||'[]');
+  const dismissados=JSON.parse(localStorage.getItem('ge_gcal_dismissed')||'[]');
   const cAtual=gc();
   const pagamentos=cAtual?cAtual.payments||[]:[];
   const hoje2=new Date();
@@ -3124,6 +3125,7 @@ async function loadPayEvents(){
   function normNome(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
   const pendentes=events.filter(ev=>{
     if(importados.includes(ev.id)) return false;
+    if(dismissados.includes(ev.id)) return false;
     const evDate=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
     if(evDate&&evDate<inicioPeriodo) return false;
     if(evDate){
@@ -3147,9 +3149,12 @@ async function loadPayEvents(){
       const title=ev.summary||'Sem título';
       const date=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
       const dateFmt=date?new Date(date+'T12:00:00').toLocaleDateString('pt-BR'):'';
-      return `<div onclick="importEvent('${title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}','${ev.id}')" style="cursor:pointer;padding:8px 12px;background:var(--bg);border:1px solid var(--b);border-radius:6px;display:flex;justify-content:space-between;align-items:center;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--al)'" onmouseout="this.style.borderColor='var(--b)'">
-        <span style="font-size:12px;font-weight:500">${title}</span>
-        <span style="font-size:11px;color:var(--m);white-space:nowrap;margin-left:8px">${dateFmt}</span>
+      return `<div style="padding:8px 12px;background:var(--bg);border:1px solid var(--b);border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--al)'" onmouseout="this.style.borderColor='var(--b)'">
+        <div onclick="importEvent('${title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}','${ev.id}')" style="cursor:pointer;flex:1;display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span style="font-size:12px;font-weight:500">${title}</span>
+          <span style="font-size:11px;color:var(--m);white-space:nowrap">${dateFmt}</span>
+        </div>
+        <button onclick="dismissGcalEvent('${ev.id}')" title="Ocultar da lista (sem excluir do Google)" style="background:none;border:1px solid var(--b);border-radius:4px;color:var(--m);cursor:pointer;font-size:13px;line-height:1;padding:2px 6px;flex-shrink:0;font-family:inherit" onmouseover="this.style.color='#b85454';this.style.borderColor='#b85454'" onmouseout="this.style.color='var(--m)';this.style.borderColor='var(--b)'">✕</button>
       </div>`;
     }).join('')+
   '</div>';
@@ -3173,8 +3178,15 @@ function importEvent(title,date,eventId){
   toast('Dados importados! Complete o restante.');
 }
 
+function dismissGcalEvent(id){
+  var arr=JSON.parse(localStorage.getItem('ge_gcal_dismissed')||'[]');
+  if(!arr.includes(id)) arr.push(id);
+  localStorage.setItem('ge_gcal_dismissed', JSON.stringify(arr));
+  loadPayEvents();
+}
 function resetImported(){
   localStorage.removeItem('ge_gcal_imported');
+  localStorage.removeItem('ge_gcal_dismissed');
   toast('Lista restaurada! Todos os eventos voltaram.');
   loadPayEvents();
 }
