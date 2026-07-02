@@ -2005,7 +2005,7 @@ function delConteudo(id){
 function _renderAgMiniCal(yr,mo){
   const cl=gc(); const posts=(cl?cl.posts||[]:[]);
   const postDates={};
-  posts.forEach(p=>{if(p.date){if(!postDates[p.date])postDates[p.date]=[];postDates[p.date].push(p.title||'Conteúdo');}});
+  posts.forEach(p=>{if(p.date&&(!p.tag||(p.tag||'').toLowerCase()!=='shorts')){if(!postDates[p.date])postDates[p.date]=[];postDates[p.date].push(p.title||'Conteúdo');}});
   const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
   const hoje=new Date().toISOString().split('T')[0];
   const selDate=(document.getElementById('ag-date')||{}).value||'';
