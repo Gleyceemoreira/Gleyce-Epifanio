@@ -1720,7 +1720,7 @@ function renderTransporte(){
   const _tp=parseFloat(c.transpAcrescimo)||0;
   const _off=_tp>0&&isTranspSurchargeOff(c.id,ms);
   const _ta=(_tp>0&&!_off)?Math.round(recebido*_tp)/100:0;
-  const _toggleBtn=_tp>0?`<span onclick="toggleTranspSurcharge('${c.id}','${ms}')" style="cursor:pointer;margin-left:6px;font-size:14px;vertical-align:middle;opacity:0.85" title="${_off?'Clique para ativar':'Clique para desativar'}">${_off?'🔴':'🟢'}</span>`:'';
+  const _toggleBtn=_tp>0?`<span onclick="toggleTranspSurcharge('${c.id}','${ms}')" style="cursor:pointer;margin-left:6px;font-size:14px;vertical-align:middle" title="${_off?'Ativar':'Desativar'} acrescimo neste mes">${_off?'🔴':'🟢'}</span>`:'';
   sumEl.innerHTML=`<div class="fc"><div class="flab">Total do mes</div><div class="fval" style="color:var(--al)">${FMT(total)}</div></div><div class="fc"><div class="flab">Reembolso recebido</div><div class="fval" style="color:#4a9e6b">${FMT(recebido)}</div></div><div class="fc"><div class="flab">A receber</div><div class="fval" style="color:#c49a3c">${FMT(total-recebido)}</div></div>${Object.entries(byTipo).map(([k,v])=>`<div class="fc"><div class="flab">${TRANSP_TIPOS[k]?.icon||'\U0001f697'} ${k}</div><div class="fval" style="color:${TRANSP_TIPOS[k]?.color||'var(--t2)'}">${FMT(v)}</div></div>`).join('')}${_tp>0?`<div class="fc" style="background:rgba(196,154,60,${_off?'0.04':'0.08'});border-left:2px solid ${_off?'#ccc':'#c49a3c'}"><div class="flab" style="color:${_off?'#999':'inherit'}">Taxa acrescimo ${_tp}%${_toggleBtn}</div><div class="fval" style="color:${_off?'#bbb':'#c49a3c'}">${_off?'desativado neste mes':'+ '+FMT(_ta)}</div></div>${!_off?`<div class="fc" style="background:rgba(42,107,124,0.08);border-left:2px solid var(--ac)"><div class="flab">Total a faturar</div><div class="fval" style="color:var(--al)">${FMT(recebido+_ta)}</div></div>`:''}`:''}` ;
   checkTranspFixBanner();
   if(!trips.length){listEl.innerHTML='<div class="empty">Nenhum transporte registrado em '+MNAMES[transpMonth]+' '+transpYear+'.<br><br><button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button></div>';return;}
@@ -2002,17 +2002,65 @@ function delConteudo(id){
   renderConteudos();toast('Ideia excluída');
 }
 
+function _renderAgMiniCal(yr,mo){
+  const cl=gc(); const posts=(cl?cl.posts||[]:[]);
+  const postDates={};
+  posts.forEach(p=>{if(p.date){if(!postDates[p.date])postDates[p.date]=[];postDates[p.date].push(p.title||'Conteúdo');}});
+  const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const hoje=new Date().toISOString().split('T')[0];
+  const selDate=(document.getElementById('ag-date')||{}).value||'';
+  const primeiro=new Date(yr,mo,1).getDay();
+  const total=new Date(yr,mo+1,0).getDate();
+  let cells='';
+  for(let i=0;i<primeiro;i++) cells+='<div></div>';
+  for(let d=1;d<=total;d++){
+    const ds=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const hp=postDates[ds]&&postDates[ds].length>0;
+    const isSel=ds===selDate; const isHoje=ds===hoje;
+    const tip=hp?postDates[ds].slice(0,3).join(', ')+(postDates[ds].length>3?' ...':''):'';
+    const bg=isSel?'var(--al)':hp?'rgba(42,107,124,0.15)':isHoje?'rgba(255,255,255,0.05)':'transparent';
+    const col=isSel?'#fff':'var(--t)';
+    const border=isHoje&&!isSel?'1px solid var(--al)':'1px solid transparent';
+    cells+=`<div onclick="document.getElementById('ag-date').value='${ds}';_renderAgMiniCal(${yr},${mo})" title="${tip}" style="cursor:pointer;padding:4px 2px;border-radius:4px;text-align:center;font-size:11px;background:${bg};color:${col};font-weight:${isSel||isHoje?700:400};border:${border}">${d}${hp?`<span style="display:block;width:4px;height:4px;border-radius:50%;background:${isSel?'rgba(255,255,255,0.8)':'var(--al)'};margin:1px auto 0"></span>`:'<span style="display:block;height:5px"></span>'}</div>`;
+  }
+  const el=document.getElementById('ag-mini-cal-grid'); if(el) el.innerHTML=cells;
+  const tit=document.getElementById('ag-cal-title'); if(tit) tit.textContent=MESES[mo]+' '+yr;
+  window._agCalYr=yr; window._agCalMo=mo;
+}
+function agCalNav(dir){
+  let yr=window._agCalYr||new Date().getFullYear();
+  let mo=window._agCalMo!==undefined?window._agCalMo:new Date().getMonth();
+  mo+=dir; if(mo<0){mo=11;yr--;} if(mo>11){mo=0;yr++;}
+  _renderAgMiniCal(yr,mo);
+}
 function agendarConteudo(id){
   const c=gc();
   const idea=(c.ideias||[]).find(x=>x.id===id);
   if(!idea)return;
+  const now=new Date(); window._agCalYr=now.getFullYear(); window._agCalMo=now.getMonth();
+  setTimeout(()=>_renderAgMiniCal(window._agCalYr,window._agCalMo),50);
   showMo('Agendar conteúdo',`
     <div style="background:var(--adim);border:1px solid var(--ab);border-radius:8px;padding:14px;margin-bottom:16px">
       <div style="font-size:13px;font-weight:600;color:var(--t);margin-bottom:4px">${idea.title}</div>
       ${idea.type?`<div style="font-size:11px;color:var(--m)">${idea.type}${idea.tag?' · '+idea.tag:''}</div>`:''}
     </div>
     <div class="fg2"><label>📅 Data de publicação *</label>
-      <input type="date" id="ag-date">
+      <input type="date" id="ag-date" oninput="_renderAgMiniCal(window._agCalYr,window._agCalMo)">
+    </div>
+    <div style="background:var(--adim);border:1px solid var(--ab);border-radius:8px;padding:10px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <button onclick="agCalNav(-1)" style="background:none;border:1px solid var(--b);border-radius:5px;color:var(--t);cursor:pointer;padding:2px 10px;font-size:12px">◀</button>
+        <span id="ag-cal-title" style="font-size:12px;font-weight:600;color:var(--t)"></span>
+        <button onclick="agCalNav(1)" style="background:none;border:1px solid var(--b);border-radius:5px;color:var(--t);cursor:pointer;padding:2px 10px;font-size:12px">▶</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:4px">
+        ${['D','S','T','Q','Q','S','S'].map(d=>`<div style="font-size:9px;color:var(--m);font-weight:600;padding:2px">${d}</div>`).join('')}
+      </div>
+      <div id="ag-mini-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+      <div style="display:flex;align-items:center;gap:5px;margin-top:7px">
+        <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--al)"></span>
+        <span style="font-size:10px;color:var(--m)">Conteúdo já agendado</span>
+      </div>
     </div>
     <div class="fg2"><label>Redes sociais</label>
       <div style="display:flex;gap:14px;flex-wrap:wrap;padding:12px;background:var(--bg);border:1px solid var(--b);border-radius:8px">
@@ -3150,11 +3198,8 @@ async function loadPayEvents(){
       const date=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
       const dateFmt=date?new Date(date+'T12:00:00').toLocaleDateString('pt-BR'):'';
       return `<div style="padding:8px 12px;background:var(--bg);border:1px solid var(--b);border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:border-color 0.2s" onmouseover="this.style.borderColor='var(--al)'" onmouseout="this.style.borderColor='var(--b)'">
-        <div onclick="importEvent('${title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}','${ev.id}')" style="cursor:pointer;flex:1;display:flex;justify-content:space-between;align-items:center;gap:8px">
-          <span style="font-size:12px;font-weight:500">${title}</span>
-          <span style="font-size:11px;color:var(--m);white-space:nowrap">${dateFmt}</span>
-        </div>
-        <button onclick="dismissGcalEvent('${ev.id}')" title="Ocultar da lista (sem excluir do Google)" style="background:none;border:1px solid var(--b);border-radius:4px;color:var(--m);cursor:pointer;font-size:13px;line-height:1;padding:2px 6px;flex-shrink:0;font-family:inherit" onmouseover="this.style.color='#b85454';this.style.borderColor='#b85454'" onmouseout="this.style.color='var(--m)';this.style.borderColor='var(--b)'">✕</button>
+        <div onclick="importEvent('${title.replace(/'/g,"\\'").replace(/"/g,'&quot;')}','${date}','${ev.id}')" style="cursor:pointer;flex:1;display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:12px;font-weight:500">${title}</span><span style="font-size:11px;color:var(--m);white-space:nowrap">${dateFmt}</span></div>
+        <button onclick="dismissGcalEvent('${ev.id}')" title="Ocultar da lista" style="background:none;border:1px solid var(--b);border-radius:4px;color:var(--m);cursor:pointer;font-size:13px;line-height:1;padding:2px 6px;flex-shrink:0" onmouseover="this.style.color='#b85454';this.style.borderColor='#b85454'" onmouseout="this.style.color='var(--m)';this.style.borderColor='var(--b)'">✕</button>
       </div>`;
     }).join('')+
   '</div>';
@@ -3181,7 +3226,7 @@ function importEvent(title,date,eventId){
 function dismissGcalEvent(id){
   var arr=JSON.parse(localStorage.getItem('ge_gcal_dismissed')||'[]');
   if(!arr.includes(id)) arr.push(id);
-  localStorage.setItem('ge_gcal_dismissed', JSON.stringify(arr));
+  localStorage.setItem('ge_gcal_dismissed',JSON.stringify(arr));
   loadPayEvents();
 }
 function resetImported(){
@@ -3305,32 +3350,15 @@ function renderInvoice(){
   const transportes=(c.transportes||[]).filter(t=>t.date&&t.date.startsWith(mS));
   const totalTransp=transportes.reduce((s,t)=>s+t.value,0);
   var transpBreak={base:0,pct:0,acrescimo:0,total:0,off:false};
-  try{ transpBreak=calcTranspBreakdownMes(c,mS); }catch(e){ transpBreak={base:totalTransp,pct:0,acrescimo:0,total:totalTransp,off:false}; }
+  try{transpBreak=calcTranspBreakdownMes(c,mS);}catch(e){transpBreak={base:totalTransp,pct:0,acrescimo:0,total:totalTransp,off:false};}
   if(transportes.length){
     const linhas=transportes.slice().sort((a,b)=>a.date.localeCompare(b.date)).flatMap(t=>{
       const trs=(t.trechos&&t.trechos.length)?t.trechos:[{direcao:'',destino:t.destino,tipo:t.tipo,value:t.value}];
       return trs.map(tr=>({date:t.date,destino:tr.destino||t.destino,tipo:tr.tipo||t.tipo,sentido:tr.direcao||'',value:tr.value||0}));
     });
-    const bodyRows=linhas.map(r=>'<tr>'+
-      '<td style="color:#555;white-space:nowrap">'+FD(r.date)+'</td>'+
-      '<td>'+(r.destino||'—')+'</td>'+
-      '<td style="color:#888;font-size:12px">'+r.tipo+'</td>'+
-      '<td style="color:#2A6B7C;font-size:11px;font-weight:600;white-space:nowrap">'+(r.sentido||'')+'</td>'+
-      '<td style="text-align:right"><strong>'+FMT(r.value)+'</strong></td>'+
-    '</tr>').join('');
-    const acrescimoRows=transpBreak.pct>0
-      ?'<tr style="background:#f9f9f9"><td colspan="4" style="color:#777;font-style:italic;border-top:2px solid #ddd">Total transporte</td><td style="text-align:right;border-top:2px solid #ddd"><strong>'+FMT(totalTransp)+'</strong></td></tr>'+
-        '<tr style="background:#fffbf0"><td colspan="4" style="color:#996600">Taxa de acrescimo '+transpBreak.pct+'%</td><td style="text-align:right;color:#996600"><strong>+ '+FMT(transpBreak.acrescimo)+'</strong></td></tr>'+
-        '<tr style="background:#f5f5f5"><td colspan="4" style="font-weight:700">Total transporte c/ acrescimo</td><td style="text-align:right"><strong>'+FMT(transpBreak.total)+'</strong></td></tr>'
-      :'';
-    html+='<div style="margin-top:20px;border-top:1px solid #eee;padding-top:20px">'+
-      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Reembolso de Transporte</div>'+
-      '<table class="invtbl"><thead><tr><th>Data</th><th>Destino</th><th>Tipo</th><th>Sentido</th><th style="text-align:right">Valor</th></tr></thead><tbody>'+
-      bodyRows+acrescimoRows+
-      '</tbody></table>'+
-      (transpBreak.pct===0?'<div style="text-align:right;margin-top:8px;font-size:13px;color:#555">Total transporte: <strong style="font-size:16px;color:#111">'+FMT(totalTransp)+'</strong></div>':'')+
-      '<div class="invtot" style="margin-top:12px"><div class="invtotl">Total Geral</div><div class="invtotv">'+FMT(total+transpBreak.total)+'</div></div>'+
-    '</div>';
+    const bodyRows=linhas.map(r=>'<tr><td style="color:#555;white-space:nowrap">'+FD(r.date)+'</td><td>'+(r.destino||'—')+'</td><td style="color:#888;font-size:12px">'+r.tipo+'</td><td style="color:#2A6B7C;font-size:11px;font-weight:600;white-space:nowrap">'+(r.sentido||'')+'</td><td style="text-align:right"><strong>'+FMT(r.value)+'</strong></td></tr>').join('');
+    const acrescimoRows=transpBreak.pct>0?'<tr style="background:#f9f9f9"><td colspan="4" style="color:#777;font-style:italic;border-top:2px solid #ddd">Total transporte</td><td style="text-align:right;border-top:2px solid #ddd"><strong>'+FMT(totalTransp)+'</strong></td></tr>'+'<tr style="background:#fffbf0"><td colspan="4" style="color:#996600">Taxa de acrescimo '+transpBreak.pct+'%</td><td style="text-align:right;color:#996600"><strong>+ '+FMT(transpBreak.acrescimo)+'</strong></td></tr>'+'<tr style="background:#f5f5f5"><td colspan="4" style="font-weight:700">Total transporte c/ acrescimo</td><td style="text-align:right"><strong>'+FMT(transpBreak.total)+'</strong></td></tr>':'';
+    html+='<div style="margin-top:20px;border-top:1px solid #eee;padding-top:20px">'+'<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Reembolso de Transporte</div>'+'<table class="invtbl"><thead><tr><th>Data</th><th>Destino</th><th>Tipo</th><th>Sentido</th><th style="text-align:right">Valor</th></tr></thead><tbody>'+bodyRows+acrescimoRows+'</tbody></table>'+(transpBreak.pct===0?'<div style="text-align:right;margin-top:8px;font-size:13px;color:#555">Total transporte: <strong style="font-size:16px;color:#111">'+FMT(totalTransp)+'</strong></div>':'')+'<div class="invtot" style="margin-top:12px"><div class="invtotl">Total Geral</div><div class="invtotv">'+FMT(total+transpBreak.total)+'</div></div>'+'</div>';
   }  html+='</div>';
   document.getElementById('inv-preview').innerHTML=html;
 }
@@ -4273,54 +4301,11 @@ setInterval(()=>{
 
 // ═══════════════════ TABELAS DE VALORES ════════════════════════════════
 var TABELAS_VALORES=JSON.parse(localStorage.getItem('tabelasValores')||'[]');
-function getTabelasValores(){
-  try{ return JSON.parse(localStorage.getItem('tabelasValores')||'[]'); }catch(e){ return []; }
-}
-function saveTabelasValores(arr){
-  localStorage.setItem('tabelasValores', JSON.stringify(arr));
-  TABELAS_VALORES=arr;
-}
-function deleteTabelaValores(i){
-  if(!confirm('Excluir esta tabela?')) return;
-  var arr=getTabelasValores(); arr.splice(i,1); saveTabelasValores(arr);
-  openTabelaValores(Math.max(0,i-1));
-}
-function confirmAddTabela(){
-  var label=(document.getElementById('new-tab-label')||{}).value||'';
-  var fi=document.getElementById('new-tab-img');
-  label=label.trim();
-  if(!label){toast('Informe o nome da tabela','err');return;}
-  if(!fi||!fi.files.length){toast('Selecione uma imagem','err');return;}
-  var reader=new FileReader();
-  reader.onload=function(e){
-    var arr=getTabelasValores();
-    arr.push({label:label,img:e.target.result});
-    saveTabelasValores(arr);
-    openTabelaValores(arr.length-1);
-    toast('Tabela adicionada!');
-  };
-  reader.readAsDataURL(fi.files[0]);
-}
-function openTabelaValores(idx){
-  var tabelas=getTabelasValores();
-  if(typeof idx!=='number'||isNaN(idx)) idx=0;
-  if(idx>=tabelas.length) idx=Math.max(0,tabelas.length-1);
-  var tabs=tabelas.map(function(t,i){return '<button onclick="openTabelaValores('+i+')" style="padding:6px 14px;border-radius:6px;font-size:11px;font-family:DM Sans,sans-serif;cursor:pointer;border:1px solid '+(i===idx?'var(--al)':'var(--b2)')+';background:'+(i===idx?'var(--adim)':'none')+';color:'+(i===idx?'var(--al)':'var(--m)')+';font-weight:'+(i===idx?600:400)+'">'+t.label+'</button>';}).join('');
-  var imgBlock=tabelas.length>0
-    ?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+tabs+'</div>'+
-      '<img src="'+tabelas[idx].img+'" style="width:100%;border-radius:8px;display:block;margin-bottom:10px">'+
-      '<button onclick="deleteTabelaValores('+idx+')" style="background:rgba(184,84,84,0.12);border:1px solid #b85454;border-radius:6px;padding:5px 14px;color:#b85454;cursor:pointer;font-size:11px;font-family:DM Sans,sans-serif">🗑 Excluir esta tabela</button>'
-    :'<div style="text-align:center;padding:24px;color:var(--m);font-size:13px">Nenhuma tabela cadastrada ainda.<br>Adicione sua primeira tabela abaixo.</div>';
-  var addBlock='<div style="margin-top:18px;border-top:1px solid var(--b);padding-top:14px">'+
-    '<div style="font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Adicionar nova tabela</div>'+
-    '<div style="display:flex;flex-direction:column;gap:8px">'+
-      '<input id="new-tab-label" type="text" placeholder="Nome da tabela (ex: Tabela Junho 2026)" style="padding:8px 12px;border-radius:6px;border:1px solid var(--b);background:var(--adim);color:var(--t);font-size:12px;font-family:DM Sans,sans-serif">'+
-      '<input id="new-tab-img" type="file" accept="image/*,application/pdf" style="padding:6px;border-radius:6px;border:1px solid var(--b);background:var(--adim);color:var(--t);font-size:12px;font-family:DM Sans,sans-serif;cursor:pointer">'+
-      '<button onclick="confirmAddTabela()" style="background:var(--al);border:none;border-radius:6px;padding:8px 16px;color:#fff;cursor:pointer;font-size:12px;font-family:DM Sans,sans-serif;font-weight:600">+ Adicionar tabela</button>'+
-    '</div>'+
-  '</div>';
-  showMo('Tabela de Valores',imgBlock+addBlock+'<div style="text-align:center;margin-top:14px"><button class="btn bg" onclick="closeMo()">Fechar</button></div>');
-}
+function getTabelasValores(){try{return JSON.parse(localStorage.getItem('tabelasValores')||'[]');}catch(e){return [];}}
+function saveTabelasValores(arr){localStorage.setItem('tabelasValores',JSON.stringify(arr));TABELAS_VALORES=arr;}
+function deleteTabelaValores(i){if(!confirm('Excluir esta tabela?'))return;var arr=getTabelasValores();arr.splice(i,1);saveTabelasValores(arr);openTabelaValores(Math.max(0,i-1));}
+function confirmAddTabela(){var label=(document.getElementById('new-tab-label')||{}).value||'';var fi=document.getElementById('new-tab-img');label=label.trim();if(!label){toast('Informe o nome da tabela','err');return;}if(!fi||!fi.files.length){toast('Selecione uma imagem','err');return;}var reader=new FileReader();reader.onload=function(e){var arr=getTabelasValores();arr.push({label:label,img:e.target.result});saveTabelasValores(arr);openTabelaValores(arr.length-1);toast('Tabela adicionada!');};reader.readAsDataURL(fi.files[0]);}
+function openTabelaValores(idx){var tabelas=getTabelasValores();if(typeof idx!=='number'||isNaN(idx))idx=0;if(idx>=tabelas.length)idx=Math.max(0,tabelas.length-1);var tabs=tabelas.map(function(t,i){return '<button onclick="openTabelaValores('+i+')" style="padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid '+(i===idx?'var(--al)':'var(--b2)')+';background:'+(i===idx?'var(--adim)':'none')+';color:'+(i===idx?'var(--al)':'var(--m)')+';font-weight:'+(i===idx?600:400)+'">'+t.label+'</button>';}).join('');var imgBlock=tabelas.length>0?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">'+tabs+'</div>'+'<img src="'+tabelas[idx].img+'" style="width:100%;border-radius:8px;display:block;margin-bottom:10px">'+'<button onclick="deleteTabelaValores('+idx+')" style="background:rgba(184,84,84,0.12);border:1px solid #b85454;border-radius:6px;padding:5px 14px;color:#b85454;cursor:pointer;font-size:11px">🗑 Excluir esta tabela</button>':'<div style="text-align:center;padding:24px;color:var(--m);font-size:13px">Nenhuma tabela cadastrada ainda.<br>Adicione sua primeira tabela abaixo.</div>';var addBlock='<div style="margin-top:18px;border-top:1px solid var(--b);padding-top:14px"><div style="font-size:11px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Adicionar nova tabela</div><div style="display:flex;flex-direction:column;gap:8px"><input id="new-tab-label" type="text" placeholder="Nome da tabela" style="padding:8px 12px;border-radius:6px;border:1px solid var(--b);background:var(--adim);color:var(--t);font-size:12px"><input id="new-tab-img" type="file" accept="image/*" style="padding:6px;border-radius:6px;border:1px solid var(--b);background:var(--adim);color:var(--t);font-size:12px;cursor:pointer"><button onclick="confirmAddTabela()" style="background:var(--al);border:none;border-radius:6px;padding:8px 16px;color:#fff;cursor:pointer;font-size:12px;font-weight:600">+ Adicionar tabela</button></div></div>';showMo('Tabela de Valores',imgBlock+addBlock+'<div style="text-align:center;margin-top:14px"><button class="btn bg" onclick="closeMo()">Fechar</button></div>');}
 
 // ═══════════════════ EMPRÉSTIMOS ════════════════════════════════════════
 function renderLoans(){
@@ -4566,28 +4551,22 @@ function calcTotalServicosPagesMes(c, ms){
     .filter(p => p.status === 'Pago' && (p.dateCirug || p.date || '').startsWith(ms))
     .reduce((s, p) => s + p.value, 0);
 }
-
-function isTranspSurchargeOff(clientId, ms){
-  return localStorage.getItem('transpSurOff_'+clientId+'_'+ms) === '1';
-}
+function isTranspSurchargeOff(clientId, ms){ return localStorage.getItem('transpSurOff_'+clientId+'_'+ms)==='1'; }
 function toggleTranspSurcharge(clientId, ms){
-  var key = 'transpSurOff_'+clientId+'_'+ms;
-  if(localStorage.getItem(key)==='1') localStorage.removeItem(key);
-  else localStorage.setItem(key,'1');
+  var key='transpSurOff_'+clientId+'_'+ms;
+  if(localStorage.getItem(key)==='1') localStorage.removeItem(key); else localStorage.setItem(key,'1');
   renderTransporte();
 }
 function calcTranspBreakdownMes(c, ms){
-  if(ms < '2026-05') return { base: 0, pct: 0, acrescimo: 0, total: 0, off: false, pctOriginal: 0 };
-  var base = (c.transportes || []).filter(function(t){ return t.reembolsoStatus === 'Recebido' && (t.date || '').startsWith(ms); }).reduce(function(s,t){ return s+t.value; }, 0);
-  var pct = parseFloat(c.transpAcrescimo) || 0;
-  var off = pct > 0 && isTranspSurchargeOff(c.id, ms);
-  if(off) pct = 0;
-  var acrescimo = Math.round(base * pct) / 100;
-  return { base: base, pct: pct, acrescimo: acrescimo, total: base + acrescimo, off: off, pctOriginal: parseFloat(c.transpAcrescimo)||0 };
+  if(ms<'2026-05') return {base:0,pct:0,acrescimo:0,total:0,off:false,pctOriginal:0};
+  var base=(c.transportes||[]).filter(function(t){return t.reembolsoStatus==='Recebido'&&(t.date||'').startsWith(ms);}).reduce(function(s,t){return s+t.value;},0);
+  var pct=parseFloat(c.transpAcrescimo)||0;
+  var off=pct>0&&isTranspSurchargeOff(c.id,ms);
+  if(off) pct=0;
+  var acrescimo=Math.round(base*pct)/100;
+  return {base:base,pct:pct,acrescimo:acrescimo,total:base+acrescimo,off:off,pctOriginal:parseFloat(c.transpAcrescimo)||0};
 }
-function calcTotalTranspRecebidoMes(c, ms){
-  return calcTranspBreakdownMes(c, ms).total;
-}
+function calcTotalTranspRecebidoMes(c,ms){ return calcTranspBreakdownMes(c,ms).total; }
 
 function renderNFPainel(c, ms, mo, yr){
   const painel = document.getElementById('nf-painel');
@@ -4598,19 +4577,11 @@ function renderNFPainel(c, ms, mo, yr){
   const numInput = document.getElementById('nf-numero-input');
   if(!painel || !valorEl || !statusEl) return;
 
-  var total=0, transp={base:0,pct:0,acrescimo:0,total:0,off:false,pctOriginal:0}, totalNF=0;
-  try{ total=calcTotalServicosPagesMes(c,ms); transp=calcTranspBreakdownMes(c,ms); totalNF=total+transp.total; }catch(e){ totalNF=total; }
-  valorEl.textContent = totalNF > 0 ? FMT(totalNF) : 'R$ 0,00 (sem pagamentos pagos)';
+  var total=0,transp={base:0,pct:0,acrescimo:0,total:0,off:false,pctOriginal:0},totalNF=0;
+  try{total=calcTotalServicosPagesMes(c,ms);transp=calcTranspBreakdownMes(c,ms);totalNF=total+transp.total;}catch(e){totalNF=total;}
+  valorEl.textContent=totalNF>0?FMT(totalNF):'R$ 0,00 (sem pagamentos pagos)';
   var obsEl=document.getElementById('nf-obs');
-  if(obsEl){
-    if(transp.base>0 && transp.pct>0){
-      obsEl.innerHTML='Serv.: <strong>'+FMT(total)+'</strong>&nbsp;+&nbsp;Transp.: '+FMT(transp.base)+' + '+transp.pct+'% ('+FMT(transp.acrescimo)+') = <strong style="color:var(--al)">'+FMT(transp.total)+'</strong>';
-    } else if(transp.base>0){
-      obsEl.textContent='Serv.: '+FMT(total)+' + Transp.: '+FMT(transp.base);
-    } else {
-      obsEl.textContent='Servicos pagos + transportes recebidos (mai/2026 em diante)';
-    }
-  }
+  if(obsEl){if(transp.base>0&&transp.pct>0){obsEl.innerHTML='Serv.: <strong>'+FMT(total)+'</strong>&nbsp;+&nbsp;Transp.: '+FMT(transp.base)+' + '+transp.pct+'% ('+FMT(transp.acrescimo)+') = <strong style="color:var(--al)">'+FMT(transp.total)+'</strong>';}else if(transp.base>0){obsEl.textContent='Serv.: '+FMT(total)+' + Transp.: '+FMT(transp.base);}else{obsEl.textContent='Servicos pagos + transportes recebidos (mai/2026 em diante)';}}
   const nf = getNFData(c.id, ms);
 
   if(nf.status === 'emitida'){
@@ -4720,8 +4691,8 @@ function renderNotas(){
     const notasMes = [];
     allClients.forEach(c => {
       const total = calcTotalServicosPagesMes(c, ms);
-      var transpT=0; try{ transpT=calcTranspBreakdownMes(c,ms).total; }catch(e){}
-      const totalNF = total + transpT;
+      var transpT=0;try{transpT=calcTranspBreakdownMes(c,ms).total;}catch(e){}
+      const totalNF=total+transpT;
       if(totalNF > 0){
         const nf = getNFData(c.id, ms);
         notasMes.push({ client: c, ms, total: totalNF, nf });
