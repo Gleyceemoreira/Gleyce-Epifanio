@@ -400,6 +400,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
           <div class="fg2"><label>Status</label><select id="fst" onchange="sf('status',this.value)"><option>Ativo</option><option>Pausado</option><option>Encerrado</option></select></div>
           <div class="fg2"><label>Cor</label><input type="color" id="fcol" oninput="sf('color',this.value)"></div>
           <div class="fg2"><label>Acrescimo s/ transporte (%)</label><input type="number" id="fta" min="0" max="100" placeholder="0" step="1" oninput="sf('transpAcrescimo',parseFloat(this.value)||0)" style="width:100%"></div>
+          <div class="fg2"><label style="display:flex;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="fsemnf" onchange="sf('semNF',this.checked)" style="width:16px;height:16px;accent-color:var(--al);cursor:pointer"> Sem emissão de NF</label></div>
           <div class="fg2 full"><label>Observações</label><textarea id="fno" rows="3" oninput="sf('notes',this.value)"></textarea></div>
         </div>
         <div style="margin-top:16px;padding:16px;background:var(--s);border:1px solid var(--ab);border-radius:10px">
@@ -550,7 +551,7 @@ input[type=color]{height:40px;width:60px;padding:3px;border-radius:6px;border:1p
             <div>
               <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--m);margin-bottom:4px">Nota Fiscal do mês</div>
               <div id="nf-valor-servicos" style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--al)">—</div>
-              <div id="nf-obs" style="font-size:11px;color:var(--m);margin-top:2px">Servicos pagos + transportes recebidos (mai/2026 em diante)</div>
+              <div id="nf-obs" style="font-size:11px;color:var(--m);margin-top:2px">Servicos pagos + transportes (mai/2026 em diante)</div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
               <div id="nf-status-badge" style="font-size:11px;font-weight:600;padding:5px 14px;border-radius:20px;cursor:pointer" onclick="toggleNFStatus()">—</div>
@@ -1719,9 +1720,9 @@ function renderTransporte(){
   const byTipo={};trips.forEach(t=>{if(!byTipo[t.tipo])byTipo[t.tipo]=0;byTipo[t.tipo]+=t.value;});
   const _tp=parseFloat(c.transpAcrescimo)||0;
   const _off=_tp>0&&isTranspSurchargeOff(c.id,ms);
-  const _ta=(_tp>0&&!_off)?Math.round(recebido*_tp)/100:0;
+  const _ta=(_tp>0&&!_off)?Math.round(total*_tp)/100:0;
   const _toggleBtn=_tp>0?`<span onclick="toggleTranspSurcharge('${c.id}','${ms}')" style="cursor:pointer;margin-left:6px;font-size:14px;vertical-align:middle" title="${_off?'Ativar':'Desativar'} acrescimo neste mes">${_off?'🔴':'🟢'}</span>`:'';
-  sumEl.innerHTML=`<div class="fc"><div class="flab">Total do mes</div><div class="fval" style="color:var(--al)">${FMT(total)}</div></div><div class="fc"><div class="flab">Reembolso recebido</div><div class="fval" style="color:#4a9e6b">${FMT(recebido)}</div></div><div class="fc"><div class="flab">A receber</div><div class="fval" style="color:#c49a3c">${FMT(total-recebido)}</div></div>${Object.entries(byTipo).map(([k,v])=>`<div class="fc"><div class="flab">${TRANSP_TIPOS[k]?.icon||'\U0001f697'} ${k}</div><div class="fval" style="color:${TRANSP_TIPOS[k]?.color||'var(--t2)'}">${FMT(v)}</div></div>`).join('')}${_tp>0?`<div class="fc" style="background:rgba(196,154,60,${_off?'0.04':'0.08'});border-left:2px solid ${_off?'#ccc':'#c49a3c'}"><div class="flab" style="color:${_off?'#999':'inherit'}">Taxa acrescimo ${_tp}%${_toggleBtn}</div><div class="fval" style="color:${_off?'#bbb':'#c49a3c'}">${_off?'desativado neste mes':'+ '+FMT(_ta)}</div></div>${!_off?`<div class="fc" style="background:rgba(42,107,124,0.08);border-left:2px solid var(--ac)"><div class="flab">Total a faturar</div><div class="fval" style="color:var(--al)">${FMT(recebido+_ta)}</div></div>`:''}`:''}` ;
+  sumEl.innerHTML=`<div class="fc"><div class="flab">Total do mes</div><div class="fval" style="color:var(--al)">${FMT(total)}</div></div><div class="fc"><div class="flab">Reembolso recebido</div><div class="fval" style="color:#4a9e6b">${FMT(recebido)}</div></div><div class="fc"><div class="flab">A receber</div><div class="fval" style="color:#c49a3c">${FMT(total-recebido)}</div></div>${Object.entries(byTipo).map(([k,v])=>`<div class="fc"><div class="flab">${TRANSP_TIPOS[k]?.icon||'🚗'} ${k}</div><div class="fval" style="color:${TRANSP_TIPOS[k]?.color||'var(--t2)'}">${FMT(v)}</div></div>`).join('')}${_tp>0?`<div class="fc" style="background:rgba(196,154,60,${_off?'0.04':'0.08'});border-left:2px solid ${_off?'#ccc':'#c49a3c'}"><div class="flab" style="color:${_off?'#999':'inherit'}">Taxa acrescimo ${_tp}%${_toggleBtn}</div><div class="fval" style="color:${_off?'#bbb':'#c49a3c'}">${_off?'desativado neste mes':'+ '+FMT(_ta)}</div></div>${!_off?`<div class="fc" style="background:rgba(42,107,124,0.08);border-left:2px solid var(--ac)"><div class="flab">Total a faturar</div><div class="fval" style="color:var(--al)">${FMT(total+_ta)}</div></div>`:''}`:''}` ;
   checkTranspFixBanner();
   if(!trips.length){listEl.innerHTML='<div class="empty">Nenhum transporte registrado em '+MNAMES[transpMonth]+' '+transpYear+'.<br><br><button class="btn bp bsm" onclick="openTransp(null)">+ Registrar transporte</button></div>';return;}
   const byDay={};trips.forEach(t=>{if(!byDay[t.date])byDay[t.date]=[];byDay[t.date].push(t);});
@@ -2287,6 +2288,7 @@ function openClient(id){
   document.getElementById('fst').value=c.status||'Ativo';
   document.getElementById('fcol').value=c.color||'#2A6B7C';
   if(document.getElementById('fta')) document.getElementById('fta').value=c.transpAcrescimo||0;
+  if(document.getElementById('fsemnf')) document.getElementById('fsemnf').checked=!!c.semNF;
   document.getElementById('fno').value=c.notes||'';
   document.getElementById('apisetup').style.display=apiKey?'none':'block';
   document.getElementById('airr').style.display='none';
@@ -3349,8 +3351,10 @@ function renderInvoice(){
   // Transporte do mês
   const transportes=(c.transportes||[]).filter(t=>t.date&&t.date.startsWith(mS));
   const totalTransp=transportes.reduce((s,t)=>s+t.value,0);
-  var transpBreak={base:0,pct:0,acrescimo:0,total:0,off:false};
-  try{transpBreak=calcTranspBreakdownMes(c,mS);}catch(e){transpBreak={base:totalTransp,pct:0,acrescimo:0,total:totalTransp,off:false};}
+  var _invPct=parseFloat(c.transpAcrescimo)||0;
+  var _invOff=_invPct>0&&isTranspSurchargeOff(c.id,mS);
+  var _invAcr=(!_invOff&&_invPct>0)?Math.round(totalTransp*_invPct)/100:0;
+  var transpBreak={base:totalTransp,pct:_invOff?0:_invPct,acrescimo:_invAcr,total:totalTransp+_invAcr,off:_invOff,pctOriginal:_invPct};
   if(transportes.length){
     const linhas=transportes.slice().sort((a,b)=>a.date.localeCompare(b.date)).flatMap(t=>{
       const trs=(t.trechos&&t.trechos.length)?t.trechos:[{direcao:'',destino:t.destino,tipo:t.tipo,value:t.value}];
@@ -4559,7 +4563,7 @@ function toggleTranspSurcharge(clientId, ms){
 }
 function calcTranspBreakdownMes(c, ms){
   if(ms<'2026-05') return {base:0,pct:0,acrescimo:0,total:0,off:false,pctOriginal:0};
-  var base=(c.transportes||[]).filter(function(t){return t.reembolsoStatus==='Recebido'&&(t.date||'').startsWith(ms);}).reduce(function(s,t){return s+t.value;},0);
+  var base=(c.transportes||[]).filter(function(t){return (t.date||'').startsWith(ms);}).reduce(function(s,t){return s+t.value;},0);
   var pct=parseFloat(c.transpAcrescimo)||0;
   var off=pct>0&&isTranspSurchargeOff(c.id,ms);
   if(off) pct=0;
@@ -4577,11 +4581,17 @@ function renderNFPainel(c, ms, mo, yr){
   const numInput = document.getElementById('nf-numero-input');
   if(!painel || !valorEl || !statusEl) return;
 
+  if(c.semNF){
+    valorEl.textContent='—';
+    var obsElSN=document.getElementById('nf-obs'); if(obsElSN) obsElSN.textContent='';
+    painel.innerHTML='<div style="padding:16px;text-align:center;color:var(--m);font-size:13px">🚫 Cliente sem emissão de NF</div>';
+    return;
+  }
   var total=0,transp={base:0,pct:0,acrescimo:0,total:0,off:false,pctOriginal:0},totalNF=0;
   try{total=calcTotalServicosPagesMes(c,ms);transp=calcTranspBreakdownMes(c,ms);totalNF=total+transp.total;}catch(e){totalNF=total;}
   valorEl.textContent=totalNF>0?FMT(totalNF):'R$ 0,00 (sem pagamentos pagos)';
   var obsEl=document.getElementById('nf-obs');
-  if(obsEl){if(transp.base>0&&transp.pct>0){obsEl.innerHTML='Serv.: <strong>'+FMT(total)+'</strong>&nbsp;+&nbsp;Transp.: '+FMT(transp.base)+' + '+transp.pct+'% ('+FMT(transp.acrescimo)+') = <strong style="color:var(--al)">'+FMT(transp.total)+'</strong>';}else if(transp.base>0){obsEl.textContent='Serv.: '+FMT(total)+' + Transp.: '+FMT(transp.base);}else{obsEl.textContent='Servicos pagos + transportes recebidos (mai/2026 em diante)';}}
+  if(obsEl){if(transp.base>0&&transp.pct>0){obsEl.innerHTML='Serv.: <strong>'+FMT(total)+'</strong>&nbsp;+&nbsp;Transp.: '+FMT(transp.base)+' + '+transp.pct+'% ('+FMT(transp.acrescimo)+') = <strong style="color:var(--al)">'+FMT(transp.total)+'</strong>';}else if(transp.base>0){obsEl.textContent='Serv.: '+FMT(total)+' + Transp.: '+FMT(transp.base);}else{obsEl.textContent='Servicos pagos + transportes (mai/2026 em diante)';}}
   const nf = getNFData(c.id, ms);
 
   if(nf.status === 'emitida'){
@@ -4690,6 +4700,7 @@ function renderNotas(){
     if(ms < nfInicio) continue; // ignorar meses antes de maio/2026
     const notasMes = [];
     allClients.forEach(c => {
+      if(c.semNF) return;
       const total = calcTotalServicosPagesMes(c, ms);
       var transpT=0;try{transpT=calcTranspBreakdownMes(c,ms).total;}catch(e){}
       const totalNF=total+transpT;
