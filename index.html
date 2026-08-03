@@ -3171,13 +3171,11 @@ async function loadPayEvents(){
   const cAtual=gc();
   const pagamentos=cAtual?cAtual.payments||[]:[];
   const hoje2=new Date();
-  const inicioPeriodo=new Date(hoje2.getFullYear(),hoje2.getMonth(),1).toISOString().split('T')[0];
   function normNome(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
   const pendentes=events.filter(ev=>{
     if(importados.includes(ev.id)) return false;
     if(dismissados.includes(ev.id)) return false;
     const evDate=ev.start?ev.start.date||ev.start.dateTime?.split('T')[0]:'';
-    if(evDate&&evDate<inicioPeriodo) return false;
     if(evDate){
       const evTitulo=normNome((ev.summary||'').split(/\s*[-–—]\s*/)[0]);
       const jaLancado=pagamentos.some(p=>{
